@@ -1,0 +1,128 @@
+{
+  "simulation": {
+    "event_name": "tianjiaerhuan",
+    "simulation_title": "baseline",
+    "event_background": "2025年5月，演员黄杨钿甜发布成人礼照片，佩戴的绿色耳饰被网友扒出疑似价值230万的奢侈品牌Graff耳环。",
+    "start_time": "2025-05-14T10:00",
+    "end_time": "2025-05-18T22:00",
+    "time_granularity": 60,
+    "participant_scale": 100,
+    "hawkes_mu": 0.05,
+    "hawkes_alpha": 0.3,
+    "hawkes_beta": 0.15,
+    "recommend_count": 5,
+    "comment_count": 5,
+    "homophily_weight": 0.4,
+    "popularity_weight": 0.3,
+    "recency_weight": 0.3,
+    "relation_weight": 0.5,
+    "hot_search_update_interval": 15,
+    "hot_search_count": 50,
+    "action_weights": {
+      "like": 0.1,
+      "repost": 1.0,
+      "repost_comment": 0.8,
+      "short_comment": 0.3,
+      "long_comment": 0.5,
+      "short_post": 0.6,
+      "long_post": 0.8
+    },
+    "use_llm": true,
+    "hawkes_activation_scale": 0.05,
+    "event_influence_scale": 100.0,
+    "circadian_curve": {
+      "0": 0.4, "1": 0.3, "2": 0.2, "3": 0.2, "4": 0.2, "5": 0.3,
+      "6": 0.5, "7": 0.7, "8": 0.9, "9": 1.0, "10": 1.0, "11": 0.95,
+      "12": 0.85, "13": 0.8, "14": 0.85, "15": 0.9, "16": 0.95, "17": 1.0,
+      "18": 1.1, "19": 1.15, "20": 1.2, "21": 1.2, "22": 1.1, "23": 0.8
+    }
+  },
+  "data": {
+    "users_file": "data/users.json",
+    "events_file": "data/events.json",
+    "initial_posts_file": "data/initial_posts.json",
+    "relations_file": "data/relations.json"
+  },
+  "llm": {
+    "max_concurrent_requests": 20,
+    "belief_llm_index": [0,1,2,3],
+    "desire_llm_index": [0,1,2,3],
+    "action_llm_index": [0,1,2,3],
+    "strategy_llm_index": [0,1,2,3],
+    "content_llm_index": [0,1,2,3],
+    "recommendation_llm_index": [0,1,2,3],
+    "other_llm_index": [0,1,2],
+    "use_local_embedding_model": true,
+    "local_embedding_model_path": "E:\\PychameProjects\\posim\\models\\bge-small-zh-v1.5",
+    "embedding_dimension": 512,
+    "embedding_device": "cpu",
+    "llm_api_configs": [
+      {
+        "name": "default",
+        "enabled": true,
+        "base_url": "https://api.siliconflow.cn/v1/",
+        "api_key": "sk-tnuyrugihnvtxuyyvgmdaotgzrgepzewzjfivfwzuzyitqcf",
+        "model": "Qwen/Qwen2.5-7B-Instruct/d356ns5sssvc73dhvds0",
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "weight": 1.0
+      },
+      {
+        "name": "default",
+        "enabled": true,
+        "base_url": "https://c-2015963864148852737.ksai.scnet.cn:58043/v1/",
+        "api_key": "xx",
+        "model": "Qwen2.5-7B-Instruct",
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "weight": 1.0
+      },
+      {
+        "name": "default",
+        "enabled": true,
+        "base_url": "https://c-2015964388503961602.ksai.scnet.cn:58043/v1/",
+        "api_key": "xx",
+        "model": "Qwen2.5-7B-Instruct",
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "weight": 1.0
+      },
+      {
+        "name": "default",
+        "enabled": true,
+        "base_url": "https://c-2016326081977315329.ksai.scnet.cn:58043/v1/",
+        "api_key": "xx",
+        "model": "Qwen2.5-7B-Instruct",
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "weight": 1.0
+      },
+      {
+        "name": "default",
+        "enabled": false,
+        "base_url": "http://192.168.10.4:8000/v1/",
+        "api_key": "xx",
+        "model": "Qwen3-30B-A3B-GPTQ-Int4",
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "weight": 1.0
+      }
+    ]
+  },
+  "neo4j": {
+    "enabled": false,
+    "uri": "bolt://localhost:7687",
+    "user": "neo4j",
+    "password": "123456"
+  },
+  "output": {
+    "base_dir": "output",
+    "save_all_results": true,
+    "run_evaluation": true
+  },
+  "debug": {
+    "enabled": true,
+    "log_level": "DEBUG",
+    "llm_prompt_sample_rate": 1
+  }
+}

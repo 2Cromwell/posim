@@ -1,0 +1,143 @@
+{
+    "event_name": "天价耳环事件",
+    "database": {
+        "name": "midu_天价耳环事件",
+        "collection": "yq_data_all",
+        "mongodb_uri": "mongodb://localhost:27017/"
+    },
+    "filter": {
+        "min_total_activities": 10,
+        "cutoff_time": "2025-05-16 00:00:00"
+    },
+    "llm": {
+        "concurrency": 50,
+        "print_probability": 0.1,
+        "api_configs": [
+            {
+                "name": "siliconflow",
+                "enabled": true,
+                "base_url": "https://api.siliconflow.cn/v1/",
+                "api_key": "sk-tnuyrugihnvtxuyyvgmdaotgzrgepzewzjfivfwzuzyitqcf",
+                "model": "Qwen/Qwen2.5-7B-Instruct/d356ns5sssvc73dhvds0",
+                "temperature": 0.7,
+                "weight": 1.0
+            },
+            {
+                "name": "ksai_1",
+                "enabled": true,
+                "base_url": "https://c-2015963864148852737.ksai.scnet.cn:58043/v1/",
+                "api_key": "xx",
+                "model": "Qwen2.5-7B-Instruct",
+                "temperature": 0.7,
+                "weight": 1.0
+            },
+            {
+                "name": "ksai_2",
+                "enabled": true,
+                "base_url": "https://c-2015964388503961602.ksai.scnet.cn:58043/v1/",
+                "api_key": "xx",
+                "model": "Qwen2.5-7B-Instruct",
+                "temperature": 0.7,
+                "weight": 1.0
+            },
+            {
+                "name": "ksai_3",
+                "enabled": true,
+                "base_url": "https://c-2016326081977315329.ksai.scnet.cn:58043/v1/",
+                "api_key": "xx",
+                "model": "Qwen2.5-7B-Instruct",
+                "temperature": 0.7,
+                "weight": 1.0
+            }
+        ]
+    },
+    "paths": {
+        "output_dir": "output",
+        "base_data_file": "base_data.json",
+        "initial_posts_file": "initial_posts.json",
+        "relations_file": "relations.json",
+        "users_file": "users.json",
+        "checkpoint_dir": "checkpoints"
+    },
+    "psychological_beliefs_pool": {
+        "self_realization": [
+            "我要通过发声来证明自己的价值和存在感",
+            "网络上我可以成为有影响力的人",
+            "我的观点应该被更多人看到和认可",
+            "我要为社会公平正义发声",
+            "我的见解独到，别人应该听听我的看法"
+        ],
+        "curiosity_seeking": [
+            "主流媒体没有报道的，往往才是真相",
+            "事情背后一定有不为人知的内幕",
+            "我要挖掘事件的真相和细节",
+            "越是被压下去的消息越值得关注",
+            "官方说法不可全信，要自己判断"
+        ],
+        "stress_relief": [
+            "现实生活中我受了气，网络是安全的宣泄场所",
+            "工作太累太压抑，网上发泄一下很正常",
+            "骂一骂有钱人能让我心里舒服点",
+            "生活压力太大，看热闹是种放松方式",
+            "网上吐槽不用负责，说说又没关系"
+        ],
+        "anti_elite": [
+            "富人的钱都是不干净的，他们拥有特权",
+            "官员十有八九都有问题，只是没被查出来",
+            "有钱有权的人从不把普通人放在眼里",
+            "贫富差距这么大，肯定有不公平的事",
+            "这个社会对普通人太不公平了"
+        ],
+        "conformity": [
+            "大家都这么说，应该不会错",
+            "这么多人转发，肯定是真的",
+            "跟着大家一起骂准没错",
+            "热搜上的事情都是重要的",
+            "别人都在讨论，我也得说两句"
+        ]
+    },
+    "influence_weights": {
+        "followers": 0.35,
+        "posts": 0.25,
+        "verified": 0.2,
+        "engagement": 0.2
+    },
+    "behavior_tendency_distributions": {
+        "citizen": {
+            "like": 0.35,
+            "repost": 0.15,
+            "repost_comment": 0.10,
+            "short_comment": 0.20,
+            "long_comment": 0.08,
+            "short_post": 0.08,
+            "long_post": 0.04
+        },
+        "kol": {
+            "like": 0.10,
+            "repost": 0.15,
+            "repost_comment": 0.20,
+            "short_comment": 0.10,
+            "long_comment": 0.15,
+            "short_post": 0.15,
+            "long_post": 0.15
+        },
+        "media": {
+            "like": 0.05,
+            "repost": 0.20,
+            "repost_comment": 0.15,
+            "short_comment": 0.05,
+            "long_comment": 0.10,
+            "short_post": 0.20,
+            "long_post": 0.25
+        },
+        "government": {
+            "like": 0.05,
+            "repost": 0.15,
+            "repost_comment": 0.10,
+            "short_comment": 0.05,
+            "long_comment": 0.15,
+            "short_post": 0.20,
+            "long_post": 0.30
+        }
+    }
+}
