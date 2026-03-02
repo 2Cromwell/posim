@@ -1,138 +1,113 @@
-"""
-外部环境事件队列 - 管理外部不可预测的事件刺激
-事件格式：<time, type, source, content, influence>
-"""
-from typing import List, Dict, Any, Optional
+"""外部环境事件队列"""
+from typing import List, Dict, Any
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
 
 class EventType(Enum):
-    """事件类型"""
-    NODE_POST = "node_post"      # 单点博文发布事件
-    GLOBAL_BROADCAST = "global_broadcast"  # 全局广播事件
-    BREAKING_NEWS = "breaking_news"  # 突发新闻
+    NODE_POST = "node_post"
+    GLOBAL_BROADCAST = "global_broadcast"
+    BREAKING_NEWS = "breaking_news"
 
 
 @dataclass
 class ExternalEvent:
-    """外部事件"""
     time: str
     event_type: EventType
-    source: List[str]  # 事件源节点列表
+    source: List[str]
     content: str
-    influence: float  # 影响力（用于霍克斯过程）
     metadata: Dict[str, Any] = None
-    
+    influence: float = 1.0
+
     def to_dict(self) -> Dict[str, Any]:
         return {
-            'time': self.time,
-            'type': self.event_type.value,
-            'source': self.source,
-            'content': self.content,
-            'influence': self.influence,
-            'metadata': self.metadata or {}
+            'time': self.time, 'type': self.event_type.value,
+            'source': self.source, 'content': self.content,
+            'metadata': self.metadata or {}, 'influence': self.influence
         }
 
 
+_EVENT_TYPE_MAP = {et.value: et for et in EventType}
+
+
 class EventQueue:
-    """事件队列管理器"""
-    
+
     def __init__(self):
         self.events: List[ExternalEvent] = []
-        self._event_index = 0
-    
+
     def load_events(self, events_data: List[Dict]):
-        """从数据加载事件"""
         for evt in events_data:
-            type_str = evt.get('type', 'global_broadcast')
-            event_type = EventType.GLOBAL_BROADCAST
-            for et in EventType:
-                if et.value == type_str:
-                    event_type = et
-                    break
-            
+            event_type = _EVENT_TYPE_MAP.get(evt.get('type', ''), EventType.GLOBAL_BROADCAST)
+            influence = max(0.0, min(1.0, float(evt.get('influence', 1.0))))
+            src = evt.get('source', [])
             self.events.append(ExternalEvent(
                 time=evt.get('time', ''),
                 event_type=event_type,
-                source=evt.get('source', []) if isinstance(evt.get('source'), list) else [evt.get('source', '')],
+                source=src if isinstance(src, list) else [src],
                 content=evt.get('content', ''),
-                influence=float(evt.get('influence', 1.0)),
-                metadata=evt.get('metadata', {})
+                metadata=evt.get('metadata', {}),
+                influence=influence
             ))
-        
-        # 按时间排序
         self.events.sort(key=lambda x: x.time)
-    
+
     def add_event(self, event: ExternalEvent):
-        """添加事件"""
         self.events.append(event)
         self.events.sort(key=lambda x: x.time)
-    
-    def get_current_events(self, current_time: str, window_size: int = 3) -> List[ExternalEvent]:
-        """
-        获取当前时间窗口内的事件
-        返回当前事件（如果有）以及之前的window_size条事件
-        """
-        current_events = []
-        past_events = []
+
+    def get_current_events(self, current_time: str, window_minutes: int = 10) -> List[ExternalEvent]:
+        """获取当前时间步窗口内新触发的全局广播事件
         
+        只返回事件时间落在 (current_time - window_minutes, current_time] 内的事件，
+        避免每一步都返回所有历史事件导致重复注入。
+        
+        Args:
+            current_time: 当前模拟时间 (ISO格式)
+            window_minutes: 时间窗口大小（分钟），应与 time_granularity 一致
+        """
         if not current_time:
             return []
-        current_dt = datetime.fromisoformat(current_time)
-        
+        cur = datetime.fromisoformat(current_time)
+        result = []
         for evt in self.events:
-            if not evt.time:
+            if not evt.time or evt.event_type != EventType.GLOBAL_BROADCAST:
                 continue
             evt_dt = datetime.fromisoformat(evt.time)
-            if evt_dt <= current_dt:
-                if evt_dt == current_dt or (current_dt - evt_dt).total_seconds() < 60:
-                    current_events.append(evt)
-                else:
-                    past_events.append(evt)
-        
-        # 返回当前事件和最近的past事件
-        result = current_events + past_events[-window_size:]
+            delta_seconds = (cur - evt_dt).total_seconds()
+            # 事件时间在 (cur - window, cur] 范围内才触发
+            if 0 <= delta_seconds < window_minutes * 60:
+                result.append(evt)
         return result
-    
-    def get_events_by_type(self, event_type: EventType, 
-                           start_time: str = None, end_time: str = None) -> List[ExternalEvent]:
-        """按类型获取事件"""
-        filtered = [e for e in self.events if e.event_type == event_type]
-        
-        if start_time:
-            start_dt = datetime.fromisoformat(start_time)
-            filtered = [e for e in filtered if datetime.fromisoformat(e.time) >= start_dt]
-        
-        if end_time:
-            end_dt = datetime.fromisoformat(end_time)
-            filtered = [e for e in filtered if datetime.fromisoformat(e.time) <= end_dt]
-        
-        return filtered
-    
-    def get_node_events(self, node_id: str, current_time: str) -> List[ExternalEvent]:
-        """获取指定节点需要处理的事件"""
-        result = []
+
+    def get_recent_events(self, current_time: str, count: int = 5) -> List[ExternalEvent]:
+        """获取截止到当前时间为止最近 count 条全局广播事件，供智能体作为历史上下文"""
         if not current_time:
             return []
-        current_dt = datetime.fromisoformat(current_time)
-        
-        for evt in self.events:
-            if evt.event_type == EventType.NODE_POST and node_id in evt.source:
-                if not evt.time:
-                    continue
-                evt_dt = datetime.fromisoformat(evt.time)
-                if evt_dt <= current_dt and (current_dt - evt_dt).total_seconds() < 60:
-                    result.append(evt)
-        
-        return result
-    
-    def get_total_influence(self, current_time: str) -> float:
-        """获取当前时间点的总影响力（用于霍克斯过程）"""
-        events = self.get_current_events(current_time)
-        return sum(e.influence for e in events)
-    
-    def to_dict_list(self) -> List[Dict]:
-        """转换为字典列表"""
-        return [e.to_dict() for e in self.events]
+        cur = datetime.fromisoformat(current_time)
+        past = [
+            evt for evt in self.events
+            if evt.event_type == EventType.GLOBAL_BROADCAST and evt.time
+            and datetime.fromisoformat(evt.time) <= cur
+        ]
+        return past[-count:] if len(past) > count else past
+
+    def get_node_events(self, current_time: str, window_minutes: int = 10) -> List[ExternalEvent]:
+        """获取当前时间步窗口内新触发的节点事件
+
+        只返回事件时间落在 (current_time - window_minutes, current_time] 内的事件，
+        与 get_current_events 逻辑一致，避免重复注入。
+
+        Args:
+            current_time: 当前模拟时间 (ISO格式)
+            window_minutes: 时间窗口大小（分钟），应与 time_granularity 一致
+        """
+        if not current_time:
+            return []
+        cur = datetime.fromisoformat(current_time)
+        window_seconds = window_minutes * 60
+        return [
+            evt for evt in self.events
+            if evt.event_type == EventType.NODE_POST and evt.time
+            and datetime.fromisoformat(evt.time) <= cur
+            and (cur - datetime.fromisoformat(evt.time)).total_seconds() < window_seconds
+        ]

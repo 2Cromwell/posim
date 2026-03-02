@@ -27,9 +27,14 @@ class HotSearchManager:
     def __init__(self, config):
         self.update_interval = config.hot_search_update_interval  # 更新间隔（分钟）
         self.max_count = config.hot_search_count
+        self.min_mentions = getattr(config, 'hot_search_min_mentions', 10)  # 上榜最小提及次数
+        self.display_count = getattr(config, 'hot_search_display_count', 5)  # 传递给智能体的数量
         self.topics: Dict[str, TopicStats] = {}
         self.hot_list: List[Tuple[str, float]] = []  # (topic, score)
         self.last_update_time: str = ""
+        
+        # 热搜历史记录 [{time, topics: [{topic, mentions, score}]}]
+        self.history: List[Dict[str, Any]] = []
         
         # 热度计算权重
         self.mention_weight = 1.0
@@ -59,19 +64,23 @@ class HotSearchManager:
         stats.comments += comments
         stats.last_update = current_time
     
-    def update_hot_list(self, current_time: str) -> List[Tuple[str, float]]:
+    def update_hot_list(self, current_time: str, force: bool = False) -> List[Tuple[str, float]]:
         """更新热搜榜单"""
         # 检查是否需要更新
-        if self.last_update_time and current_time:
+        if not force and self.last_update_time and current_time:
             last_dt = datetime.fromisoformat(self.last_update_time)
             current_dt = datetime.fromisoformat(current_time)
             minutes_passed = (current_dt - last_dt).total_seconds() / 60
             if minutes_passed < self.update_interval:
                 return self.hot_list
         
-        # 计算所有话题的热度得分
+        # 计算所有话题的热度得分（需满足最小提及次数）
         scored = []
         for topic, stats in self.topics.items():
+            # 检查是否满足最小提及次数阈值
+            if stats.mentions < self.min_mentions:
+                continue
+            
             # 基础热度
             base_score = (
                 stats.mentions * self.mention_weight +
@@ -91,12 +100,20 @@ class HotSearchManager:
             
             final_score = base_score * decay
             stats.heat_score = final_score
-            scored.append((topic, final_score))
+            scored.append((topic, final_score, stats.mentions))
         
         # 排序
         scored.sort(key=lambda x: x[1], reverse=True)
-        self.hot_list = scored[:self.max_count]
+        self.hot_list = [(t, s) for t, s, _ in scored[:self.max_count]]
         self.last_update_time = current_time
+        
+        # 记录历史
+        if scored:
+            self.history.append({
+                'time': current_time,
+                'topics': [{'topic': t, 'mentions': m, 'score': s} 
+                          for t, s, m in scored[:self.max_count]]
+            })
         
         # 应用衰减
         for stats in self.topics.values():
@@ -120,13 +137,13 @@ class HotSearchManager:
             })
         return result
     
-    def get_topic_stats(self, topic: str) -> TopicStats:
-        """获取话题统计"""
-        topic = topic.strip('#')
-        return self.topics.get(topic)
+    def get_top_topics_text(self, count: int = None) -> str:
+        """获取热搜话题文本（用于提示词）"""
+        count = count or self.display_count
+        if not self.hot_list:
+            return ""
+        topics = [f"#{t}#" for t, _ in self.hot_list[:count]]
+        return "、".join(topics)
     
-    def clear_cold_topics(self, min_score: float = 1.0):
-        """清理冷门话题"""
-        to_remove = [t for t, s in self.topics.items() if s.heat_score < min_score]
-        for t in to_remove:
-            del self.topics[t]
+    def get_history(self) -> List[Dict[str, Any]]:
+        return self.history

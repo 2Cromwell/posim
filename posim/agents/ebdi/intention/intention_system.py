@@ -2,12 +2,17 @@
 意图系统主类 - 通过单次LLM调用使用三级COT生成行为决策列表
 """
 import json
+import logging
+import random
 import re
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 from posim.prompts.prompt_loader import PromptLoader
+from posim.utils.formatters import format_external_events, format_exposed_posts, format_hot_topics
+
+logger = logging.getLogger(__name__)
 
 
 class ActionType(Enum):
@@ -77,7 +82,8 @@ class IntentionSystem:
                                   max_actions: int = 3,
                                   current_time: str = None,
                                   event_background: str = "",
-                                  external_events: List[Dict] = None) -> List[IntentionResult]:
+                                  external_events: List[Dict] = None,
+                                  hot_topics: str = "") -> List[IntentionResult]:
         """
         通过单次LLM调用生成多个行为决策
         Args:
@@ -87,12 +93,13 @@ class IntentionSystem:
             agent_type: 智能体类型
             max_actions: 最大行为数（仅作参考，实际由LLM决定）
             current_time: 当前仿真时间
+            hot_topics: 当前热搜话题文本
         """
         if current_time is None:
             current_time = datetime.now().strftime('%Y-%m-%dT%H:%M')
         
         # 构建提示词
-        prompt = self._build_intention_prompt(belief_text, desires, exposed_posts, agent_type, current_time, external_events or [], event_background)
+        prompt = self._build_intention_prompt(belief_text, desires, exposed_posts, agent_type, current_time, external_events or [], event_background, hot_topics)
         
         # 单次LLM调用（无需system prompt，已合并到主提示词中）
         response = await self.api_pool.async_text_query(prompt, "", purpose='action')
@@ -104,7 +111,8 @@ class IntentionSystem:
     
     def _build_intention_prompt(self, belief_text: str, desires: List[Dict], 
                                  posts: List[Dict], agent_type: str, current_time: str,
-                                 external_events: List[Dict] = None, event_background: str = "") -> str:
+                                 external_events: List[Dict] = None, event_background: str = "",
+                                 hot_topics: str = "") -> str:
         """构建意图决策提示词"""
         prompts = PromptLoader.get_intention_prompts(agent_type)
         output_format = PromptLoader.get_output_format('intention')
@@ -112,48 +120,22 @@ class IntentionSystem:
         # 构建欲望文本
         desires_text = "\n".join([f"- {d.get('type', '')}: {d.get('description', '')}" for d in desires])
         
-            # 构建曝光信息文本（带时间戳，区分原发/转发/转发评论）
-        exposed_parts = []
-        if posts:
-            exposed_parts.append("### 曝光的博文：")
-            for i, post in enumerate(posts[:5], 1):
-                post_time = post.get('time', '')
-                time_prefix = f"[{post_time}] " if post_time else ""
-                author = post.get('author', '')
-                post_type = post.get('post_type', 'original')
-                
-                if post_type == 'repost':
-                    original_author = post.get('original_author', '')
-                    original_content = post.get('original_content', '')[:150]
-                    exposed_parts.append(f"{i}. {time_prefix}@{author} 转发了博文（仅转发）：")
-                    exposed_parts.append(f"   原博 @{original_author}：{original_content}")
-                elif post_type == 'repost_comment':
-                    original_author = post.get('original_author', '')
-                    original_content = post.get('original_content', '')[:150]
-                    repost_comment = post.get('repost_comment', post.get('content', ''))[:100]
-                    exposed_parts.append(f"{i}. {time_prefix}@{author} 转发了博文并评论：")
-                    exposed_parts.append(f"   原博 @{original_author}：{original_content}")
-                    exposed_parts.append(f"   转发评论：{repost_comment}")
-                else:
-                    content = post.get('content', '')[:200]
-                    exposed_parts.append(f"{i}. {time_prefix}@{author} 发表了博文：{content}")
-                
-                if post.get('comments'):
-                    exposed_parts.append(f"   热门评论：{post['comments'][0] if post['comments'] else ''}")
-        # 构建外部突发事件文本（3个事件窗口）
-        events_parts = []
-        if external_events:
-            events_parts.append("### 当前外部突发事件：")
-            for evt in external_events[:3]:
-                events_parts.append(f"- [{evt.get('time', '')}] {evt.get('content', '')}")
+        # 使用工具函数格式化信息（intention系统使用全部传入的博文）
+        num_posts = min(max(0, random.randint(0, min(10, len(posts)))), len(posts)) if posts else 0
+        sampled_posts = random.sample(posts, num_posts) if posts and num_posts > 0 else []
+        exposed_text = format_exposed_posts(sampled_posts, current_time, max_posts=num_posts,
+                                           include_stats=True, include_comments=True)
+        events_text = format_external_events(external_events or [], current_time)
+        hot_topics_text = format_hot_topics(hot_topics)
         
         prompt = prompts['intention'].format(
             current_time=current_time,
             belief_text=belief_text,
             desires=desires_text if desires_text else "无明确欲望",
-            exposed_posts="\n".join(exposed_parts) if exposed_parts else "无可互动博文",
-            external_events="\n".join(events_parts) if events_parts else "",
-            event_background=event_background
+            exposed_posts=exposed_text if exposed_text else "当前无可互动博文，如果要执行行为，请基于当前热点事件发布原发博文表达观点",
+            external_events=events_text,
+            event_background=event_background,
+            hot_topics=hot_topics_text
         )
         return prompt + output_format
     
@@ -172,8 +154,8 @@ class IntentionSystem:
                     intention = self._parse_single_action(action_data, posts)
                     if intention:
                         intentions.append(intention)
-            except json.JSONDecodeError:
-                pass
+            except json.JSONDecodeError as e:
+                logger.warning(f"Failed to parse intention response JSON: {e}")
         
         # 如果解析失败，返回默认行为
         if not intentions and posts:
@@ -187,11 +169,13 @@ class IntentionSystem:
         
         return intentions
     
-    # 中文行为类型到英文的映射
+    # 中文行为类型到英文的映射（包含常见变体）
     ACTION_TYPE_MAP = {
         '点赞': 'like', '转发': 'repost', '转发并评论': 'repost_comment',
+        '转发评论': 'repost_comment', '转发加评论': 'repost_comment',
         '短评论': 'short_comment', '长评论': 'long_comment',
-        '短博文': 'short_post', '长博文': 'long_post'
+        '短博文': 'short_post', '长博文': 'long_post',
+        '评论': 'short_comment', '博文': 'short_post',
     }
     
     # 中文情绪到英文的映射
@@ -219,12 +203,27 @@ class IntentionSystem:
         '引用权威': 'cite_authority'
     }
     
+    def _normalize_action_type(self, raw: str) -> str:
+        """鲁棒的行为类型映射：精确匹配 → 前缀匹配 → 子串匹配 → 原样返回"""
+        raw = raw.strip()
+        if raw in self.ACTION_TYPE_MAP:
+            return self.ACTION_TYPE_MAP[raw]
+        if raw in {v for v in self.ACTION_TYPE_MAP.values()}:
+            return raw
+        for cn, en in self.ACTION_TYPE_MAP.items():
+            if raw.startswith(cn):
+                return en
+        for cn, en in self.ACTION_TYPE_MAP.items():
+            if cn in raw:
+                return en
+        return raw
+
     def _parse_single_action(self, action_data: Dict, posts: List[Dict]) -> Optional[IntentionResult]:
         """解析单个行为决策（支持中文和英文字段）"""
         try:
-            # 解析行为类型（支持中英文）
+            # 解析行为类型（支持中英文，使用鲁棒映射）
             action_type_raw = action_data.get('行为类型', action_data.get('action_type', '点赞'))
-            action_type = self.ACTION_TYPE_MAP.get(action_type_raw, action_type_raw)
+            action_type = self._normalize_action_type(action_type_raw)
             
             # 解析目标博文序号
             target_idx = action_data.get('目标博文序号', action_data.get('target_post_index', 1)) - 1

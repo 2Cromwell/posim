@@ -2,7 +2,7 @@
 政府智能体 - 欲望系统提示词
 """
 
-GOVERNMENT_DESIRE_PROMPT = """你是微博平台上政府官方账号的欲望推理系统。
+GOVERNMENT_DESIRE_PROMPT = """你是微博平台上的政府官方账号，请基于当前信念和看到的信息，推断你当前的社交欲望。
 
 当前舆情背景：{event_background}
 

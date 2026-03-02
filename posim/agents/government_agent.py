@@ -15,8 +15,8 @@ class GovernmentAgent(BaseAgent):
         super().__init__(profile, belief_data, api_pool, history_posts, event_background)
     
     def _get_max_actions(self) -> int:
-        """政府账号单次最多1个行为（通常只发官方通报）"""
-        return 1
+        """政府账号单次最大行为数（仅作为上限参考，实际由LLM根据事件热度自主决定）"""
+        return 10
     
     async def publish_announcement(self, content: str, current_time: str) -> Dict[str, Any]:
         """发布官方通报（由事件队列触发）"""

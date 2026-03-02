@@ -105,6 +105,7 @@ def generate_social_network(users_with_influence):
     - 新节点倾向于连接高影响力节点
     - 考虑用户类型的异质性（普通用户关注KOL/媒体的概率更高）
     """
+    import time
     n = len(users_with_influence)
     relations = []
     
@@ -113,6 +114,7 @@ def generate_social_network(users_with_influence):
     user_ids = [u['user_id'] for u in sorted_users]
     influences = {u['user_id']: u['influence'] for u in sorted_users}
     agent_types = {u['user_id']: u['agent_type'] for u in sorted_users}
+    usernames = {u['user_id']: u['username'] for u in sorted_users}
     
     # 构建初始核心网络（前5%高影响力用户相互连接）
     core_size = max(3, int(n * 0.05))
@@ -120,17 +122,32 @@ def generate_social_network(users_with_influence):
     
     print(f"[INFO] 核心用户数: {core_size}")
     
+    # 生成时间戳基准（使用事件开始时间）
+    base_timestamp = int(time.mktime(time.strptime("2025-05-10 00:00:00", "%Y-%m-%d %H:%M:%S")))
+    
     # 核心用户之间相互关注（形成核心圈）
     for i, u1 in enumerate(core_users):
         for u2 in core_users[i+1:]:
             if random.random() < 0.6:  # 60%概率相互关注
-                relations.append({"follower_id": u1, "following_id": u2, "relation_type": "follow"})
+                timestamp = base_timestamp + random.randint(0, 86400 * 3)  # 3天内
+                relations.append({
+                    "follower_id": u1,
+                    "following_id": u2,
+                    "relation_type": "follow",
+                    "timestamp": timestamp
+                })
                 if random.random() < 0.5:
-                    relations.append({"follower_id": u2, "following_id": u1, "relation_type": "follow"})
+                    timestamp = base_timestamp + random.randint(0, 86400 * 3)
+                    relations.append({
+                        "follower_id": u2,
+                        "following_id": u1,
+                        "relation_type": "follow",
+                        "timestamp": timestamp
+                    })
     
     # 为每个用户生成关注关系
     # 平均每人关注 5-15 个用户
-    for user in sorted_users:
+    for idx, user in enumerate(sorted_users):
         user_id = user['user_id']
         user_type = user['agent_type']
         user_influence = user['influence']
@@ -180,13 +197,64 @@ def generate_social_network(users_with_influence):
         following = np.random.choice(candidates, size=follow_count, replace=False, p=probs)
         
         for f in following:
+            # 时间戳：越早注册的用户关注时间越早
+            timestamp = base_timestamp + idx * 3600 + random.randint(0, 3600)
             relations.append({
                 "follower_id": user_id,
                 "following_id": f,
-                "relation_type": "follow"
+                "relation_type": "follow",
+                "timestamp": timestamp
             })
     
-    return relations
+    return relations, usernames
+
+
+def generate_cosmograph_files(relations, users_with_influence, output_dir):
+    """
+    生成cosmograph可视化所需的TSV文件
+    - nodes.tsv: id, label, agent_type, followers_count
+    - edges.tsv: source, target, timestamp, relation_type
+    """
+    import csv
+    
+    # 创建用户信息字典
+    user_info_map = {u['user_id']: u for u in users_with_influence}
+    
+    # 生成nodes文件
+    nodes_file = os.path.join(output_dir, 'follow_nodes.tsv')
+    unique_users = set()
+    for r in relations:
+        unique_users.add(r['follower_id'])
+        unique_users.add(r['following_id'])
+    
+    with open(nodes_file, 'w', encoding='utf-8', newline='') as f:
+        writer = csv.writer(f, delimiter='\t')
+        # 写入表头
+        writer.writerow(['id', 'label', 'agent_type', 'followers_count'])
+        for user_id in unique_users:
+            user_info = user_info_map.get(user_id, {})
+            writer.writerow([
+                user_id,
+                user_info.get('username', user_id),
+                user_info.get('agent_type', ''),
+                user_info.get('followers_count', 0)
+            ])
+    print(f"[INFO] 节点文件已保存至: {nodes_file}")
+    
+    # 生成edges文件
+    edges_file = os.path.join(output_dir, 'follow_edges.tsv')
+    with open(edges_file, 'w', encoding='utf-8', newline='') as f:
+        writer = csv.writer(f, delimiter='\t')
+        # 写入表头
+        writer.writerow(['source', 'target', 'timestamp', 'relation_type'])
+        for r in relations:
+            writer.writerow([
+                r['follower_id'],
+                r['following_id'],
+                r.get('timestamp', 0),
+                r['relation_type']
+            ])
+    print(f"[INFO] 边文件已保存至: {edges_file}")
 
 
 def main():
@@ -237,7 +305,7 @@ def main():
     
     # 生成社交网络
     print("[INFO] 开始生成社交网络...")
-    relations = generate_social_network(users_with_influence)
+    relations, usernames = generate_social_network(users_with_influence)
     
     print(f"[INFO] 生成关注关系数: {len(relations)}")
     print(f"[INFO] 平均每用户关注数: {len(relations) / len(users_with_influence):.2f}")
@@ -255,6 +323,10 @@ def main():
         json.dump(users_with_influence, f, ensure_ascii=False, indent=2)
     
     print(f"[INFO] 用户影响力数据已保存至: {influence_file}")
+    
+    # 生成cosmograph可视化文件
+    print("[INFO] 开始生成cosmograph可视化文件...")
+    generate_cosmograph_files(relations, users_with_influence, config['paths']['output_dir'])
     
     return relations
 

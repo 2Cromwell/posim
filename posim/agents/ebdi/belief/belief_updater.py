@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import Dict, Any, List
 from .belief_system import BeliefSystem
 from posim.prompts.prompt_loader import PromptLoader
+from posim.utils.formatters import format_external_events, format_exposed_posts, format_memories
 
 
 class BeliefUpdater:
@@ -52,49 +53,11 @@ class BeliefUpdater:
         prompts = PromptLoader.get_belief_prompts(agent_type)
         output_format = PromptLoader.get_output_format('belief')
         
-        # 构建新信息文本（带时间戳，区分原发/转发/转发评论）
-        new_info_parts = []
-        if posts:
-            new_info_parts.append("### 曝光的博文：")
-            for i, post in enumerate(posts[:5], 1):
-                post_time = post.get('time', '')
-                time_prefix = f"[{post_time}] " if post_time else ""
-                author = post.get('author', '未知')
-                post_type = post.get('post_type', 'original')
-                
-                if post_type == 'repost':
-                    original_author = post.get('original_author', '')
-                    orig_content = post.get('original_content', '')
-                    original_content = orig_content[:150] if orig_content else ''
-                    new_info_parts.append(f"{i}. {time_prefix}@{author} 转发了博文（仅转发）：")
-                    new_info_parts.append(f"   原博 @{original_author}：{original_content}")
-                elif post_type == 'repost_comment':
-                    original_author = post.get('original_author', '')
-                    orig_content = post.get('original_content', '')
-                    original_content = orig_content[:150] if orig_content else ''
-                    rp_comment = post.get('repost_comment', post.get('content', ''))
-                    repost_comment = rp_comment[:100] if rp_comment else ''
-                    new_info_parts.append(f"{i}. {time_prefix}@{author} 转发了博文并评论：")
-                    new_info_parts.append(f"   原博 @{original_author}：{original_content}")
-                    new_info_parts.append(f"   转发评论：{repost_comment}")
-                else:
-                    content_raw = post.get('content', '')
-                    content = content_raw[:200] if content_raw else ''
-                    new_info_parts.append(f"{i}. {time_prefix}@{author} 发表了博文：{content}")
-                
-                new_info_parts.append(f"   [点赞:{post.get('likes', 0)} 转发:{post.get('reposts', 0)} 评论:{post.get('comments_count', 0)}]")
-                if post.get('comments'):
-                    new_info_parts.append("   热门评论：" + " | ".join(post['comments'][:3]))
-        
-        # 构建外部突发事件文本
-        events_parts = []
-        if events:
-            events_parts.append("### 当前外部突发事件：")
-            for evt in events[:3]:
-                events_parts.append(f"- [{evt.get('time', '')}] {evt.get('content', '')}")
-        
-        # 构建记忆文本（带目标描述）
-        memory_text = self._format_memories(memories)
+        # 使用工具函数格式化信息
+        new_info_text = format_exposed_posts(posts, current_time, max_posts=5, 
+                                             include_stats=True, include_comments=True)
+        events_text = format_external_events(events, current_time)
+        memory_text = format_memories(memories)
         
         # 获取身份信息和其他信念状态
         identity_text = belief.identity.to_prompt_text()
@@ -104,48 +67,12 @@ class BeliefUpdater:
             current_time=current_time,
             identity_text=identity_text,
             belief_text=other_beliefs,
-            new_info="\n".join(new_info_parts) if new_info_parts else "无新信息",
+            new_info=new_info_text if new_info_text else "无新信息",
             memories=memory_text if memory_text else "无历史记忆",
-            external_events="\n".join(events_parts) if events_parts else "",
+            external_events=events_text,
             event_background=event_background
         )
         return prompt + output_format
-    
-    def _format_memories(self, memories: List[Dict]) -> str:
-        """格式化历史行为记忆（包含目标描述）"""
-        if not memories:
-            return ""
-        lines = []
-        for mem in memories[:5]:
-            time_str = mem.get('time', '')
-            action_type = mem.get('action_type', '')
-            content = mem.get('content', '')
-            target = mem.get('target', '')
-            
-            # 构建带目标的行为描述
-            if action_type in ['repost', 'repost_comment']:
-                if target:
-                    desc = f"[{time_str}] 我转发了博文《{target[:30]}...》"
-                    if content:
-                        desc += f"，附带评论：{content[:50]}..."
-                else:
-                    desc = f"[{time_str}] 我转发了一条博文"
-            elif action_type in ['short_comment', 'long_comment']:
-                if target:
-                    desc = f"[{time_str}] 我评论了博文《{target[:30]}...》：{content[:50]}..."
-                else:
-                    desc = f"[{time_str}] 我发表了评论：{content[:50]}..."
-            elif action_type == 'like':
-                if target:
-                    desc = f"[{time_str}] 我点赞了博文《{target[:30]}...》"
-                else:
-                    desc = f"[{time_str}] 我点赞了一条博文"
-            elif action_type in ['short_post', 'long_post']:
-                desc = f"[{time_str}] 我发布了原创博文：{content[:50]}..."
-            else:
-                desc = f"[{time_str}] {content[:80]}..."
-            lines.append(f"- {desc}")
-        return "\n".join(lines)
     
     def _format_other_beliefs(self, belief: BeliefSystem) -> str:
         """格式化除身份以外的信念状态"""

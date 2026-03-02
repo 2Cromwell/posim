@@ -21,7 +21,7 @@ class SimulationDatabase:
         """初始化数据表"""
         cursor = self.conn.cursor()
         
-        # 行为记录表
+        # 行为记录表（包含完整表达策略）
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS actions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,8 +35,13 @@ class SimulationDatabase:
                 target_author TEXT,
                 content TEXT,
                 emotion TEXT,
+                emotion_intensity TEXT,
                 stance TEXT,
+                stance_intensity TEXT,
+                style TEXT,
+                narrative TEXT,
                 topics TEXT,
+                mentions TEXT,
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
             )
         ''')
@@ -66,15 +71,22 @@ class SimulationDatabase:
             )
         ''')
         
+        # 添加索引以加速查询
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_actions_step ON actions(step)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_actions_user ON actions(user_id)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_actions_type ON actions(action_type)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_statistics_step ON statistics(step)')
+        
         self.conn.commit()
     
     def save_action(self, action: Dict[str, Any], step: int):
-        """保存行为记录"""
+        """保存行为记录（包含完整表达策略）"""
         cursor = self.conn.cursor()
         cursor.execute('''
             INSERT INTO actions (step, time, user_id, username, agent_type, action_type,
-                               target_post_id, target_author, content, emotion, stance, topics)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                               target_post_id, target_author, content, emotion, emotion_intensity,
+                               stance, stance_intensity, style, narrative, topics, mentions)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             step,
             action.get('time', ''),
@@ -84,17 +96,51 @@ class SimulationDatabase:
             action.get('action_type', ''),
             action.get('target_post_id', ''),
             action.get('target_author', ''),
-            action.get('content', ''),
+            action.get('content', action.get('text', '')),
             action.get('emotion', ''),
+            str(action.get('emotion_intensity', '')),
             action.get('stance', ''),
-            json.dumps(action.get('topics', []), ensure_ascii=False)
+            str(action.get('stance_intensity', '')),
+            action.get('style', ''),
+            action.get('narrative', ''),
+            json.dumps(action.get('topics', []), ensure_ascii=False),
+            json.dumps(action.get('mentions', []), ensure_ascii=False)
         ))
         self.conn.commit()
     
     def save_actions_batch(self, actions: List[Dict], step: int):
-        """批量保存行为"""
+        """批量保存行为（单次事务提交，性能优化）"""
+        if not actions:
+            return
+        cursor = self.conn.cursor()
+        rows = []
         for action in actions:
-            self.save_action(action, step)
+            rows.append((
+                step,
+                action.get('time', ''),
+                action.get('user_id', ''),
+                action.get('username', ''),
+                action.get('agent_type', ''),
+                action.get('action_type', ''),
+                action.get('target_post_id', ''),
+                action.get('target_author', ''),
+                action.get('content', action.get('text', '')),
+                action.get('emotion', ''),
+                str(action.get('emotion_intensity', '')),
+                action.get('stance', ''),
+                str(action.get('stance_intensity', '')),
+                action.get('style', ''),
+                action.get('narrative', ''),
+                json.dumps(action.get('topics', []), ensure_ascii=False),
+                json.dumps(action.get('mentions', []), ensure_ascii=False)
+            ))
+        cursor.executemany('''
+            INSERT INTO actions (step, time, user_id, username, agent_type, action_type,
+                               target_post_id, target_author, content, emotion, emotion_intensity,
+                               stance, stance_intensity, style, narrative, topics, mentions)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', rows)
+        self.conn.commit()
     
     def save_snapshot(self, step: int, time: str, data: Dict):
         """保存状态快照"""

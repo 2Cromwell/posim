@@ -1,25 +1,57 @@
 """
 Step1: 数据提取与清洗
 - 从MongoDB读取天价耳环事件数据
-- 筛选总行为数>10的用户
+- 筛选时间范围内的用户和博文
+- 筛选总行为数>=min_total_activities的用户
 - 提取关键字段并清洗文本
 - 构建转发链和评论链
 - 保存基础数据到JSON
 """
 import json
 import re
+import os
 from datetime import datetime
 from pymongo import MongoClient
 from collections import defaultdict
+from tqdm import tqdm
 
 # 加载配置
 with open('config.json', 'r', encoding='utf-8') as f:
     config = json.load(f)
 
+# 时间配置
+START_TIME = datetime.strptime(config['filter']['start_time'], "%Y-%m-%d %H:%M:%S")
+CUTOFF_TIME = datetime.strptime(config['filter']['cutoff_time'], "%Y-%m-%d %H:%M:%S")
+END_TIME = datetime.strptime(config['filter']['end_time'], "%Y-%m-%d %H:%M:%S")
+
+# 输出配置
+output_dir = config['paths']['output_dir']
+output_file = os.path.join(output_dir, config['paths']['base_data_file'])
+
 # MongoDB连接
 client = MongoClient(config['database']['mongodb_uri'])
 db = client[config['database']['name']]
 collection = db[config['database']['collection']]
+
+
+def parse_time(time_str):
+    """解析时间字符串"""
+    if not time_str:
+        return None
+    for fmt in ["%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M"]:
+        try:
+            return datetime.strptime(time_str, fmt)
+        except:
+            continue
+    return None
+
+
+def is_in_time_range(time_str):
+    """判断时间是否在[start_time, end_time]范围内"""
+    dt = parse_time(time_str)
+    if dt is None:
+        return False
+    return START_TIME <= dt <= END_TIME
 
 
 def clean_text(text):
@@ -226,24 +258,61 @@ def main():
     print("=" * 60)
     print("Step1: 数据提取与清洗")
     print("=" * 60)
+    print(f"[INFO] 时间范围: {START_TIME} ~ {END_TIME}")
+    print(f"[INFO] 截止时间(用于初始博文): {CUTOFF_TIME}")
     
     min_activities = config['filter']['min_total_activities']
     
-    # 查询满足条件的用户
-    query = {"stats.total_activities": {"$gte": min_activities}}
-    total_count = collection.count_documents(query)
-    print(f"[INFO] 满足条件（行为数>={min_activities}）的用户数: {total_count}")
+    # 第一步：获取所有用户数据用于统计时间范围内的行为数
+    print("[STEP 1/3] 正在加载所有用户数据...")
+    all_docs = list(collection.find({}))
+    print(f"[INFO] 数据库中总用户数: {len(all_docs)}")
     
-    # 处理数据
-    users_data = []
-    cursor = collection.find(query)
+    # 第二步：统计每个用户在时间范围内的行为数，筛选满足条件的用户
+    print("[STEP 2/3] 正在筛选时间范围内的活跃用户...")
+    eligible_user_ids = set()
     
-    for i, doc in enumerate(cursor):
-        user_data = process_user_data(doc)
-        users_data.append(user_data)
+    for doc in tqdm(all_docs, desc="统计用户行为"):
+        total_activities_in_range = 0
         
-        if (i + 1) % 100 == 0:
-            print(f"[PROGRESS] 已处理 {i + 1}/{total_count} 用户")
+        # 统计时间范围内的原创博文数
+        for post in doc.get('original_posts', []):
+            if is_in_time_range(post.get('日期', '')):
+                total_activities_in_range += 1
+        
+        # 统计时间范围内的转发博文数
+        for post in doc.get('repost_posts', []):
+            if is_in_time_range(post.get('日期', '')):
+                total_activities_in_range += 1
+        
+        # 统计时间范围内的评论数
+        for comment in doc.get('comments', []):
+            if is_in_time_range(comment.get('日期', '')):
+                total_activities_in_range += 1
+        
+        # 更新用户的stats中的total_activities_in_range
+        if 'stats' not in doc:
+            doc['stats'] = {}
+        doc['stats']['total_activities_in_range'] = total_activities_in_range
+        
+        if total_activities_in_range >= min_activities:
+            eligible_user_ids.add(doc.get('user_key'))
+    
+    print(f"[INFO] 时间范围内行为数>={min_activities}的用户数: {len(eligible_user_ids)}")
+    
+    # 第三步：处理符合条件的用户数据
+    print("[STEP 3/3] 正在处理用户数据...")
+    users_data = []
+    
+    for doc in tqdm(all_docs, desc="处理用户数据"):
+        user_key = doc.get('user_key')
+        if user_key not in eligible_user_ids:
+            continue
+        
+        user_data = process_user_data(doc)
+        # 添加时间范围内的行为统计
+        user_data['stats']['total_activities_in_range'] = doc.get('stats', {}).get('total_activities_in_range', 0)
+        users_data.append(user_data)
     
     print(f"[INFO] 数据处理完成，共 {len(users_data)} 个用户")
     

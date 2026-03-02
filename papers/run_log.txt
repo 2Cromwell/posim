@@ -1,0 +1,77 @@
+============================================================
+Running generate_lifecycle_pdf.py ...
+============================================================
+Loading data...
+  12261 records
+  -> E:\PychameProjects\posim\papers\figures\fig_lifecycle_paper.pdf
+  -> E:\PychameProjects\posim\papers\figures\fig_lifecycle_paper.png
+
+============================================================
+Running fig_paper_final.py ...
+============================================================
+============================================================
+论文终稿配图：异质性 · 极化 · 幂律  (xibeiyuzhicai)
+============================================================
+Loaded 12261 actions, steps: 0-425
+Agent types: {'citizen': np.int64(7718), 'kol': np.int64(2562), 'media': np.int64(1580), 'government': np.int64(401)}
+[FIG] Heterogeneity (3 panels)...
+  Saved fig_paper_heterogeneity.
+[FIG] Polarization Index...
+  Emotion types: 11, H_max=3.459
+  Saved. Early PI=0.411, Late PI=0.670, Rise=62.8%
+[FIG] Power-law distributions...
+  Saved. γ=1.87 (R²=0.880), α=3.70 (R²=0.880)
+[METRICS] Computing arousal theory metrics...
+  High arousal %: 73.5%
+  β (trend): 0.000341, p=4.44e-05
+  High cascade mean: 1.69, Low: 1.76
+  U-test p: 9.74e-01
+  Contagion rate: 0.772
+  Escalation ratio: 4.78
+
+============================================================
+[SUMMARY] Heterogeneity metrics:
+  citizen: count=7718, emo_int=0.645, content_len=43.4, post=0.0%, comment=0.0%, repost=0.0%
+  kol: count=2562, emo_int=0.603, content_len=73.3, post=0.0%, comment=0.0%, repost=0.0%
+  media: count=1580, emo_int=0.266, content_len=100.2, post=0.0%, comment=0.0%, repost=0.0%
+  government: count=401, emo_int=0.128, content_len=90.6, post=0.0%, comment=0.0%, repost=0.0%
+
+[SUMMARY] Polarization:
+  early_PI: 0.4114783745478133
+  late_PI: 0.669775714375056
+  rise_pct: 62.773004805196365
+  n_emo_types: 11
+  H_max: 3.4594316186372973
+
+[SUMMARY] Power-law:
+  n_nodes: 1490
+  max_deg: 75
+  avg_deg: 6.246979865771812
+  gamma: 1.8729788552423092
+  r2_deg: 0.8804725618266677
+  n_cascade: 5473
+  max_casc: 11
+  avg_casc: 1.700712589073634
+  med_casc: 1.0
+  alpha: 3.6951282067213334
+  r2_cas: 0.8801589588015686
+  top20_contrib: 0.5132144391920929
+
+[SUMMARY] Arousal metrics:
+  beta_arousal: 0.0003412813373405475
+  p_arousal: 4.435008067988638e-05
+  high_pct: 73.48503384715765
+  mean_high_cascade: 1.688715953307393
+  mean_low_cascade: 1.7593908629441624
+  u_stat: 2078093.5
+  p_mw: 0.973689271304873
+  mean_hi_intensity: 0.6581798002219755
+  mean_lo_intensity: 0.3279913872654568
+  contagion_rate: 0.7723292469352014
+  escalation_ratio: 4.783505154639175
+============================================================
+Done.
+
+============================================================
+ALL DONE
+============================================================

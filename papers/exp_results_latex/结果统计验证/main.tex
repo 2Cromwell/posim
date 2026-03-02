@@ -1,0 +1,154 @@
+\documentclass[11pt]{article}
+
+% --- Packages ---
+\usepackage[a4paper, margin=1.5cm]{geometry}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{array}
+\usepackage{makecell}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
+\usepackage{CJKutf8}
+
+% --- Color Definitions ---
+\definecolor{oursrow}{RGB}{228,238,255}
+
+% --- Custom Commands ---
+\newcommand{\best}[1]{\textbf{#1}}
+\newcommand{\na}{\text{---}}
+
+\begin{document}
+\begin{CJK}{UTF8}{gbsn}
+\sloppy
+
+\section{统计结果校准}
+
+统计结果校准旨在回答仿真系统是否准确再现了真实世界的舆情动态。我们从\textbf{行为层}、\textbf{内容层}和\textbf{拓扑层}三个维度对仿真结果与真实数据进行了系统性的一致性校准。为全面评估POSIM的仿真效果，我们设置了以下对比方法：（1）\textbf{Rule-based ABM}：基于预定义行为决策规则的传统仿真方法，以规则驱动替代认知推理；（2）\textbf{POSIM w/o EBDI}：移除元认知EBDI架构，直接由大语言模型进行单步行为决策；（3）\textbf{POSIM w/ CoT}：保留环境框架但将EBDI多步认知替换为单次思维链推理。
+
+\subsection{评估指标体系}
+
+为系统量化仿真与真实数据的一致性，我们设计了覆盖行为、内容和拓扑三个层面的评估指标体系。
+
+\textbf{行为层}包含三个指标：（1）\textit{行为类型分布散度}（BType JSD），采用Jensen-Shannon散度度量模拟与真实行为类型分布的差异：
+\begin{equation}
+\text{JSD}(P \| Q) = \tfrac{1}{2} D_{\text{KL}}(P \| M) + \tfrac{1}{2} D_{\text{KL}}(Q \| M), \quad M = \tfrac{1}{2}(P + Q)
+\end{equation}
+其中$P$和$Q$分别为模拟和真实的行为类型（原创、转发、评论）概率分布，JSD值越低表示越接近真实；
+（2）\textit{行为量曲线Pearson相关系数}（Act.\,$\rho$），衡量模拟与真实的行为量时序曲线（即各时间步的行为总量）之间的趋势一致性：
+\begin{equation}
+\rho = \frac{\sum_{t=1}^{T}(\hat{y}_t - \bar{\hat{y}})(y_t - \bar{y})}{\sqrt{\sum_{t=1}^{T}(\hat{y}_t - \bar{\hat{y}})^2 \cdot \sum_{t=1}^{T}(y_t - \bar{y})^2}}
+\end{equation}
+其中$\hat{y}_t$和$y_t$分别为模拟和真实在时间步$t$的归一化行为总量；
+（3）\textit{行为量曲线RMSE}（Act.\,RMSE），衡量归一化后行为量曲线的绝对偏差：
+\begin{equation}
+\text{RMSE} = \sqrt{\frac{1}{T}\sum_{t=1}^{T}(\hat{y}'_t - y'_t)^2}
+\end{equation}
+其中$\hat{y}'$和$y'$为经Min-Max归一化到$[0,1]$的时序曲线。
+
+\textbf{内容层}包含三个指标：（1）\textit{话语对抗性相似度}（Confr.\,Sim.），通过关键词检测评估模拟与真实内容中对抗性表达的比率差异：$\text{Confr.} = 1 - |c_{\text{sim}} - c_{\text{real}}|$，其中$c$为文本中包含对抗性关键词的比率；
+（2）\textit{词汇多样性偏差}（$|\Delta\text{TTR}|$），计算Type-Token Ratio的绝对差异：$|\Delta\text{TTR}| = |\text{TTR}_{\text{sim}} - \text{TTR}_{\text{real}}|$，TTR定义为唯一词元数与总词元数之比；
+（3）\textit{情感均值偏差}（$|\Delta\bar{S}|$），计算模拟与真实内容情感极性均值的绝对差异：$|\Delta\bar{S}| = |\bar{S}_{\text{sim}} - \bar{S}_{\text{real}}|$，其中$\bar{S} \in [0,1]$由情感分析模型给出。
+
+\textbf{拓扑层}包含两个指标：（1）\textit{网络结构相似度}（Net.\,Sim.），综合比较模拟与真实转发网络的入度分布、出度分布和网络密度等拓扑特征的加权相似度；
+（2）\textit{级联规模分布相似度}（Casc.\,Sim.），将信息级联（转发链）的规模分组为直方图，通过直方图交集度量模拟与真实级联规模的分布一致性。
+
+各层的平均得分（Avg.）通过将所有指标归一化到"越高越好"方向后取均值计算：对$\downarrow$指标取$1 - x$。
+
+% ============================================================
+% TABLE
+% ============================================================
+\begin{table*}[!htbp]
+\centering
+\caption{Statistical calibration results across three events (LE = Luxury-Earring, WL = WHU-Library, XF = Xibei-Food). \textbf{Bold} = best per dataset. ``---'' = inapplicable to rule-based methods.}
+\label{tab:calibration}
+\vspace{2pt}
+\renewcommand{\arraystretch}{1.18}
+\resizebox{\textwidth}{!}{%
+\footnotesize
+\begin{tabular}{@{}cl cccc cccc ccc@{}}
+\toprule
+\multirow{2}{*}{\textbf{Data}} & \multirow{2}{*}{\textbf{Method}} 
+& \multicolumn{4}{c}{\textbf{Behavior Layer}} 
+& \multicolumn{4}{c}{\textbf{Content Layer}} 
+& \multicolumn{3}{c}{\textbf{Topology Layer}} \\
+\cmidrule(lr){3-6} \cmidrule(lr){7-10} \cmidrule(lr){11-13}
+& & \makecell{BType\\JSD\,$\downarrow$} & \makecell{Act.\\$\rho$\,$\uparrow$} & \makecell{Act.\\RMSE\,$\downarrow$} & \makecell{Avg.\\$\uparrow$}
+& \makecell{Confr.\\Sim.\,$\uparrow$} & \makecell{$|\Delta\text{TTR}|$\\$\downarrow$} & \makecell{$|\Delta\bar{S}|$\\$\downarrow$} & \makecell{Avg.\\$\uparrow$}
+& \makecell{Net.\\Sim.\,$\uparrow$} & \makecell{Casc.\\Sim.\,$\uparrow$} & \makecell{Avg.\\$\uparrow$} \\
+\midrule
+
+% ==================== LE ====================
+\multirow{4}{*}{\textbf{LE}}
+& Rule-based ABM        & 0.275 & 0.738 & 0.172 & 0.764 & \na & \na & \na & \na & 0.530 & 0.310 & 0.420 \\
+& POSIM w/o EBDI        & 0.295 & 0.768 & 0.165 & 0.769 & 0.885 & 0.282 & 0.254 & 0.783 & 0.755 & 0.742 & 0.749 \\
+& POSIM w/ CoT          & 0.225 & 0.785 & 0.161 & 0.800 & 0.882 & 0.145 & 0.105 & 0.877 & 0.768 & 0.785 & 0.777 \\
+\rowcolor{oursrow}
+& \textbf{POSIM (Ours)}  & \best{0.193} & \best{0.809} & \best{0.154} & \best{0.821} & \best{0.893} & \best{0.041} & \best{0.029} & \best{0.941} & \best{0.779} & \best{0.845} & \best{0.812} \\
+
+\midrule
+
+% ==================== WL ====================
+\multirow{4}{*}{\textbf{WL}}
+& Rule-based ABM        & 0.255 & 0.713 & 0.120 & 0.779 & \na & \na & \na & \na & 0.547 & 0.285 & 0.416 \\
+& POSIM w/o EBDI        & 0.322 & 0.733 & 0.136 & 0.758 & 0.888 & 0.311 & 0.342 & 0.745 & \best{0.837} & 0.729 & \best{0.783} \\
+& POSIM w/ CoT          & 0.155 & 0.742 & 0.126 & 0.820 & 0.942 & 0.180 & 0.252 & 0.837 & 0.792 & 0.748 & 0.770 \\
+\rowcolor{oursrow}
+& \textbf{POSIM (Ours)}  & \best{0.073} & \best{0.750} & \best{0.118} & \best{0.853} & \best{0.985} & \best{0.011} & \best{0.203} & \best{0.924} & 0.772 & \best{0.761} & 0.767 \\
+
+\midrule
+
+% ==================== XF ====================
+\multirow{4}{*}{\textbf{XF}}
+& Rule-based ABM        & 0.295 & 0.719 & 0.171 & 0.751 & \na & \na & \na & \na & 0.637 & 0.325 & 0.481 \\
+& POSIM w/o EBDI        & 0.413 & 0.708 & 0.178 & 0.706 & \best{0.996} & 0.411 & \best{0.019} & 0.855 & 0.782 & \best{0.715} & \best{0.749} \\
+& POSIM w/ CoT          & 0.215 & 0.718 & 0.173 & 0.777 & 0.950 & 0.198 & 0.038 & 0.905 & 0.784 & 0.702 & 0.743 \\
+\rowcolor{oursrow}
+& \textbf{POSIM (Ours)}  & \best{0.148} & \best{0.727} & \best{0.168} & \best{0.804} & 0.972 & \best{0.020} & 0.046 & \best{0.969} & \best{0.789} & 0.707 & 0.748 \\
+
+\bottomrule
+\end{tabular}%
+}
+\vspace{1pt}
+{\scriptsize \textit{Note:} Rule-based ABM relies on templates without text generation or directed interactions; content-layer and cascade metrics are thus inapplicable (---). Avg. is computed by normalizing $\downarrow$ metrics via $1{-}x$ then averaging.}
+\end{table*}
+
+% ============================================================
+% ANALYSIS TEXT
+% ============================================================
+
+实验在三个真实舆情数据集上开展，结果如表~\ref{tab:calibration}所示。
+
+\subsection{行为层校准}
+
+行为层校准从行为类型分布和行为量时序曲线两个角度评估仿真与真实数据的一致性。
+
+从表~\ref{tab:calibration}可以看出，POSIM在三个数据集上的行为类型分布JSD均取得了最优结果，尤其在WL数据集上JSD仅为0.073，说明EBDI元认知架构产生的行为决策在类型比例上与真实数据高度一致。值得注意的是，移除EBDI架构后（w/o EBDI），行为分布的偏差显著增大，尤其在XF数据集上JSD从0.148升至0.413，表明分层认知推理对行为决策的类型多样性起到了关键的调控作用。在行为量曲线校准方面，POSIM在所有数据集上均获得了最高的Pearson相关系数和最低的RMSE，行为层平均得分在三个数据集上分别达到0.821、0.853和0.804，均为所有方法中最高。w/ CoT方法虽然引入了思维链推理，但由于缺乏信念-欲望-意图的分层建模，其行为层整体拟合精度仍低于完整的POSIM框架。
+
+\subsection{内容层校准}
+
+内容层校准评估仿真生成内容与真实内容在话语对抗性、词汇多样性和情感倾向三个维度上的相似性。传统的Rule-based ABM由于仅使用模板化文本输出，内容层指标不适用，这恰恰凸显了大语言模型驱动的仿真方法在内容生成层面的本质优势。
+
+在LLM驱动方法的对比中，POSIM的词汇多样性差异$|\Delta\text{TTR}|$在所有数据集上均为最小（LE上仅为0.041，WL上仅为0.011），表明EBDI架构通过分层认知推理有效避免了"平均人格"问题，使得不同智能体产生差异化的文本输出。相比之下，w/o EBDI方法的TTR偏差显著偏大，说明缺乏结构化认知建模时智能体的文本输出趋于同质化。
+
+在情感校准方面，POSIM在LE数据集上实现了仅0.029的情感均值偏差。在XF数据集上，w/o EBDI方法的情感偏差反而更小（0.019 vs 0.046），但其在行为和词汇维度的系统性劣势表明这种一致性并非来自对真实认知过程的有效建模。从内容层平均得分来看，POSIM在三个数据集上分别取得0.941、0.924和0.969的高分，均显著优于其他方法，体现了EBDI架构在内容生成质量上的全面优势。
+
+\subsection{拓扑层校准}
+
+拓扑层校准从网络结构和信息级联两个角度评估仿真与真实社交网络的结构相似性。
+
+Rule-based ABM由于未建模用户间的定向交互关系，其网络中缺乏有效的转发边，网络结构和级联规模相似度均明显偏低（拓扑层平均仅0.42--0.48），这反映了传统规则驱动方法在建模社交互动结构方面的根本性缺陷。
+
+在LLM驱动方法中，POSIM在LE数据集上取得了最优的拓扑层指标（级联规模相似度达0.845），表明POSIM能够准确再现真实社交网络中的信息扩散模式。在WL和XF数据集上，w/o EBDI方法的拓扑层平均略高于POSIM（分别为0.783 vs 0.767和0.749 vs 0.748），这是因为拓扑结构主要受环境层的推荐机制和霍克斯点过程驱动，与认知架构的直接关联较弱。然而，从全局视角来看，POSIM在行为和内容两个与认知决策直接相关的层面上具有显著且一致的优势。
+
+\subsection{综合分析}
+
+综合三个层面的校准结果，POSIM在行为层和内容层的平均得分上全面领先，在拓扑层也保持了高度竞争力。这得益于EBDI元认知架构的三方面贡献：（1）分层信念更新机制使智能体能够根据不同类型信息的可信度进行差异化的认知修正，从而产生更符合真实人类特征的行为分布；（2）基于欲望驱动的动机生成避免了直接提示方式的"理性人"偏差，使不同心理特征的智能体展现出差异化的行为倾向；（3）多级意图规划保证了内容生成的策略多样性，有效提升了词汇丰富度和话语风格的异质性。
+
+\end{CJK}
+\end{document}

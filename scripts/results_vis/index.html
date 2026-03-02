@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POSIM 舆情仿真可视化系统</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts-wordcloud@2.1.0/dist/echarts-wordcloud.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+
+<!-- Top Navigation Bar -->
+<header class="top-bar">
+  <div class="top-bar-left">
+    <div class="logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" stroke="currentColor" stroke-width="2"/><circle cx="14" cy="14" r="5" fill="currentColor" opacity="0.6"/><line x1="14" y1="2" x2="14" y2="8" stroke="currentColor" stroke-width="2"/><line x1="14" y1="20" x2="14" y2="26" stroke="currentColor" stroke-width="2"/><line x1="2" y1="14" x2="8" y2="14" stroke="currentColor" stroke-width="2"/><line x1="20" y1="14" x2="26" y2="14" stroke="currentColor" stroke-width="2"/></svg>
+      <span>POSIM 舆情仿真可视化</span>
+    </div>
+  </div>
+  <div class="top-bar-center">
+    <div class="experiment-selector">
+      <label>事件：</label>
+      <select id="eventSelect"></select>
+      <label>实验：</label>
+      <select id="experimentSelect"></select>
+      <button id="loadBtn" class="btn btn-primary">加载数据</button>
+    </div>
+  </div>
+  <div class="top-bar-right">
+    <button id="themeToggle" class="btn btn-icon" title="切换主题">
+      <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <span class="status-badge" id="statusBadge">未加载</span>
+  </div>
+</header>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay" style="display:none">
+  <div class="loading-spinner"></div>
+  <p>正在加载仿真数据...</p>
+</div>
+
+<!-- Navigation Tabs -->
+<nav class="tab-nav" id="tabNav">
+  <button class="tab-btn active" data-tab="overview">📊 总览</button>
+  <button class="tab-btn" data-tab="posts">📝 博文广场</button>
+  <button class="tab-btn" data-tab="hotlist">🔥 热榜/事件线</button>
+  <button class="tab-btn" data-tab="network">🕸️ 传播网络</button>
+  <button class="tab-btn" data-tab="toplist">🏆 排行榜</button>
+  <button class="tab-btn" data-tab="curves">📈 趋势曲线</button>
+  <button class="tab-btn" data-tab="analysis">🔬 深度分析</button>
+</nav>
+
+<!-- Main Content -->
+<main class="main-content" id="mainContent">
+
+  <!-- ===== TAB: Overview ===== -->
+  <section class="tab-panel active" id="panel-overview">
+    <div class="stats-cards" id="statsCards"></div>
+    <div class="grid-2">
+      <div class="card"><div class="card-title">行为时序 (每步行为数)</div><div class="chart-box" id="chart-actionsPerStep"></div></div>
+      <div class="card"><div class="card-title">活跃用户时序</div><div class="chart-box" id="chart-activeAgents"></div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="card-title">行为类型分布</div><div class="chart-box" id="chart-actionTypes"></div></div>
+      <div class="card"><div class="card-title">主体类型分布</div><div class="chart-box" id="chart-agentTypes"></div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="card-title">Hawkes过程强度曲线</div><div class="chart-box" id="chart-intensity"></div></div>
+      <div class="card"><div class="card-title">情绪分布总览</div><div class="chart-box" id="chart-emotionOverview"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== TAB: Posts ===== -->
+  <section class="tab-panel" id="panel-posts">
+    <div class="posts-toolbar">
+      <input type="text" id="postSearch" class="input-search" placeholder="搜索博文内容、话题、用户...">
+      <select id="postSortBy" class="select-sm">
+        <option value="influence">按影响力</option>
+        <option value="time_desc">按时间（新→旧）</option>
+        <option value="time_asc">按时间（旧→新）</option>
+        <option value="emotion">按情绪强度</option>
+      </select>
+      <div class="filter-chips" id="agentFilterChips">
+        <button class="chip active" data-filter="all">全部</button>
+        <button class="chip" data-filter="citizen">👤 普通用户</button>
+        <button class="chip" data-filter="kol">⭐ 大V</button>
+        <button class="chip" data-filter="media">📺 媒体</button>
+        <button class="chip" data-filter="government">🏛️ 政府</button>
+      </div>
+      <select id="postActionFilter" class="select-sm">
+        <option value="all">所有行为</option>
+        <option value="short_post">短博文</option>
+        <option value="long_post">长博文</option>
+        <option value="short_comment">短评论</option>
+        <option value="long_comment">长评论</option>
+        <option value="repost">转发</option>
+        <option value="repost_comment">转发评论</option>
+      </select>
+    </div>
+    <div class="posts-count" id="postsCount"></div>
+    <div class="posts-feed" id="postsFeed"></div>
+    <div class="load-more-box"><button class="btn btn-secondary" id="loadMorePosts">加载更多</button></div>
+  </section>
+
+  <!-- ===== TAB: Hot List / Event Timeline ===== -->
+  <section class="tab-panel" id="panel-hotlist">
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">🔥 实时热搜榜</div>
+        <div id="hotSearchList" class="hot-search-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📅 事件时间线</div>
+        <div id="eventTimeline" class="event-timeline"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">热搜话题热度演化</div>
+      <div class="chart-box chart-box-lg" id="chart-hotSearchEvolution"></div>
+    </div>
+  </section>
+
+  <!-- ===== TAB: Network ===== -->
+  <section class="tab-panel" id="panel-network">
+    <div class="network-toolbar">
+      <select id="networkType" class="select-sm">
+        <option value="all">全部交互</option>
+        <option value="repost">转发网络</option>
+        <option value="comment">评论网络</option>
+      </select>
+      <label>节点大小：<input type="range" id="nodeSize" min="3" max="40" value="12"></label>
+      <label>边粗细：<input type="range" id="edgeWidth" min="0.3" max="5" value="0.8" step="0.1"></label>
+      <label>最大节点数：<input type="number" id="maxNodes" value="150" min="10" max="1000" step="10" class="input-sm"></label>
+      <button class="btn btn-primary" id="renderNetworkBtn">重新渲染</button>
+    </div>
+    <div class="network-layout">
+      <div class="card network-card">
+        <div id="chart-network" style="width:100%;height:100%"></div>
+      </div>
+      <div class="card network-info-panel" id="networkInfoPanel">
+        <div class="card-title">📋 节点信息</div>
+        <div id="nodeInfoContent" class="node-info-content">
+          <p class="text-muted">点击网络中的节点查看详细信息</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TAB: Top Lists ===== -->
+  <section class="tab-panel" id="panel-toplist">
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title">🔄 转发最多（用户发起转发）</div>
+        <div id="topReposters" class="top-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">🔥 被转发最多（帖子被转发）</div>
+        <div id="topReposted" class="top-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">💬 评论最多（用户发起评论）</div>
+        <div id="topCommenters" class="top-list"></div>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title">📝 发帖最多</div>
+        <div id="topPosters" class="top-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">⭐ 最活跃用户</div>
+        <div id="topActive" class="top-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">💬 被评论最多（帖子被评论）</div>
+        <div id="topCommented" class="top-list"></div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="card-title">用户行为数排行</div><div class="chart-box" id="chart-topUsersBar"></div></div>
+      <div class="card"><div class="card-title">帖子被互动数排行</div><div class="chart-box" id="chart-topPostsBar"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== TAB: Curves ===== -->
+  <section class="tab-panel" id="panel-curves">
+    <div class="curves-toolbar">
+      <select id="curveMetric" class="select-sm">
+        <option value="emotion">情绪变化</option>
+        <option value="stance">立场变化</option>
+        <option value="style">表达风格</option>
+        <option value="narrative">叙事策略</option>
+        <option value="emotion_intensity">情绪强度</option>
+        <option value="stance_intensity">立场强度</option>
+      </select>
+      <select id="curveGroupBy" class="select-sm">
+        <option value="all">全部</option>
+        <option value="agent_type">按主体类型</option>
+      </select>
+    </div>
+    <div class="card">
+      <div class="card-title" id="curveTitle">情绪变化趋势</div>
+      <div class="chart-box chart-box-lg" id="chart-curveTrend"></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="card-title">情绪强度时序</div><div class="chart-box" id="chart-emotionIntensityTime"></div></div>
+      <div class="card"><div class="card-title">立场强度时序</div><div class="chart-box" id="chart-stanceIntensityTime"></div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="card-title">各主体情绪对比</div><div class="chart-box" id="chart-emotionByAgent"></div></div>
+      <div class="card"><div class="card-title">各主体立场对比</div><div class="chart-box" id="chart-stanceByAgent"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== TAB: Analysis ===== -->
+  <section class="tab-panel" id="panel-analysis">
+    <div class="grid-2">
+      <div class="card"><div class="card-title">☁️ 内容词云</div><div class="chart-box" id="chart-wordcloud"></div></div>
+      <div class="card"><div class="card-title">📊 话题提及频率</div><div class="chart-box" id="chart-topicFreq"></div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="card-title">⏰ 行为时段分布（24h）</div><div class="chart-box" id="chart-hourlyDist"></div></div>
+      <div class="card"><div class="card-title">📅 日行为量分布</div><div class="chart-box" id="chart-dailyDist"></div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="card-title">🎯 情绪-立场散点图</div><div class="chart-box" id="chart-emotionStanceScatter"></div></div>
+      <div class="card"><div class="card-title">📊 行为类型×主体类型热力图</div><div class="chart-box" id="chart-actionAgentHeatmap"></div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="card-title">🌊 信息流 Sankey 图</div><div class="chart-box chart-box-lg" id="chart-sankey"></div></div>
+      <div class="card"><div class="card-title">🎭 情绪雷达图</div><div class="chart-box chart-box-lg" id="chart-emotionRadar"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📈 行为累积曲线</div>
+      <div class="chart-box chart-box-lg" id="chart-cumulativeActions"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <span>POSIM - Public Opinion Simulation &amp; Intelligence Monitor | Built with ECharts</span>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

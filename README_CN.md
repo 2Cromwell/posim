@@ -83,6 +83,7 @@ pip install -r requirements.txt
 3. **准备数据**
 
 在 `scripts/tianjiaerhuan/data/` 目录下准备：
+
 - `users.json`: 用户数据（包含信念系统）
 - `events.json`: 事件队列
 - `initial_posts.json`: 初始博文

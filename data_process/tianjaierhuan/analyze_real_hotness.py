@@ -10,9 +10,9 @@ from collections import defaultdict
 # ========== 参数配置 ==========
 INPUT_FILE = "output/base_data.json"
 OUTPUT_DIR = "output/analysis"
-TIME_GRANULARITY = 60  # 分钟
-TIME_START = "2025-05-13 00:00:00"
-TIME_END = "2025-05-31 00:00:00"
+TIME_GRANULARITY = 10  # 分钟
+TIME_START = "2025-05-16 00:00:00"
+TIME_END = "2025-05-20 23:59:59"
 SMOOTH_WINDOW = 5
 FIG_SIZE, DPI, LW, ALPHA = (14, 5), 150, 1.5, 0.3
 

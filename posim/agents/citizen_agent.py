@@ -15,8 +15,8 @@ class CitizenAgent(BaseAgent):
         super().__init__(profile, belief_data, api_pool, history_posts, event_background)
     
     def _get_max_actions(self) -> int:
-        """普通网民单次最多2个行为"""
-        return 5
+        """普通网民单次最大行为数（仅作为上限参考，实际由LLM根据事件热度自主决定）"""
+        return 10
     
     @classmethod
     def from_dict(cls, data: Dict[str, Any], api_pool, event_background: str = "") -> 'CitizenAgent':

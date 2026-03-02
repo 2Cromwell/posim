@@ -2,6 +2,7 @@
 基础智能体抽象类 - 定义元认知智能体的通用接口
 感知 → 信念 → 欲望 → 意图 → 行为
 """
+import random
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
@@ -11,6 +12,8 @@ from .ebdi.desire.desire_system import DesireSystem
 from .ebdi.intention.intention_system import IntentionSystem, IntentionResult
 from .ebdi.memory.stream_memory import StreamMemory
 from .ebdi.memory.memory_retrieval import MemoryRetrieval
+from posim.prompts.ablation_prompts import get_no_ebdi_prompt, get_cot_prompt
+from posim.utils.formatters import format_external_events, format_exposed_posts, format_hot_topics
 
 
 @dataclass
@@ -74,16 +77,17 @@ class BaseAgent(ABC):
         return posts_weight * posts_score + influence_weight * influence_score
     
     async def perceive_and_act(self, exposed_posts: List[Dict], external_events: List[Dict],
-                               current_time: str) -> List[IntentionResult]:
+                               current_time: str, hot_topics: str = "") -> List[IntentionResult]:
         """
         感知环境并产生行为
         核心认知流程：感知 → 信念更新 → 欲望生成 → 意图决策 → 行为输出
+        Args:
+            hot_topics: 当前热搜话题文本（用于引导智能体使用话题标签）
         """
         if self.is_banned:
             return []
         
         # 1. 检索相关记忆
-        query = self._build_memory_query(exposed_posts, external_events)
         relevant_memories = self.memory_retrieval.retrieve_by_recency_and_importance(self.memory, top_k=5)
         memories_dict = self.memory.to_dict_list(relevant_memories)
         
@@ -106,7 +110,8 @@ class BaseAgent(ABC):
         intentions = await self.intention_system.generate_intentions(
             belief_text, desires_dict, exposed_posts, self.agent_type, 
             max_actions=self._get_max_actions(), current_time=current_time,
-            event_background=self.event_background, external_events=external_events
+            event_background=self.event_background, external_events=external_events,
+            hot_topics=hot_topics
         )
         
         # 5. 记录行为到记忆
@@ -115,17 +120,6 @@ class BaseAgent(ABC):
         
         self.last_action_time = current_time
         return intentions
-    
-    def _build_memory_query(self, posts: List[Dict], events: List[Dict]) -> str:
-        """构建记忆查询"""
-        parts = []
-        if posts:
-            content = posts[0].get('content', '')
-            parts.append(content[:200] if content else '')
-        if events:
-            event_content = events[0].get('content', '')
-            parts.append(event_content[:200] if event_content else '')
-        return " ".join(parts) if parts else "最近的社交活动"
     
     def _record_action_to_memory(self, intention: IntentionResult, current_time: str):
         """记录行为到记忆（包含目标描述）"""
@@ -139,10 +133,95 @@ class BaseAgent(ABC):
         self.memory.add(content=action_desc, memory_type='action', importance=importance,
                        metadata=metadata, timestamp=current_time)
                        
+    async def perceive_and_act_no_ebdi(self, exposed_posts: List[Dict], external_events: List[Dict],
+                                       current_time: str, hot_topics: str = "") -> List[IntentionResult]:
+        """
+        w/o EBDI消融: 不使用结构化认知框架
+        跳过信念更新和欲望生成，直接基于身份+上下文生成行为
+        不维护持久化信念状态（无情绪衰减、无观点累积）
+        """
+        if self.is_banned:
+            return []
+        
+        # 获取身份文本（仅使用初始身份信息，不使用动态信念状态）
+        identity_text = self.belief_system.identity.to_prompt_text()
+        
+        # 格式化上下文
+        exposed_text = format_exposed_posts(exposed_posts, current_time, max_posts=10,
+                                           include_stats=True, include_comments=True)
+        events_text = format_external_events(external_events, current_time)
+        hot_topics_text = format_hot_topics(hot_topics)
+        
+        # 获取消融prompt并填充
+        prompt_template = get_no_ebdi_prompt(self.agent_type)
+        prompt = prompt_template.format(
+            event_background=self.event_background,
+            current_time=current_time,
+            identity_text=identity_text,
+            exposed_posts=exposed_text if exposed_text else "当前无可互动博文，可发布原创博文",
+            hot_topics=hot_topics_text,
+            external_events=events_text
+        )
+        
+        # 单次LLM调用生成行为
+        response = await self.api_pool.async_text_query(prompt, "", purpose='action')
+        
+        # 复用IntentionSystem的解析逻辑
+        intentions = self.intention_system._parse_intentions(response, exposed_posts)
+        
+        # 记录行为到记忆
+        for intention in intentions:
+            self._record_action_to_memory(intention, current_time)
+        
+        self.last_action_time = current_time
+        return intentions
+    
+    async def perceive_and_act_cot(self, exposed_posts: List[Dict], external_events: List[Dict],
+                                   current_time: str, hot_topics: str = "") -> List[IntentionResult]:
+        """
+        w/ CoT消融: 单次LLM调用，合并信念-欲望-意图的链式推理
+        不使用独立的Belief/Desire模块，但有CoT引导推理
+        不维护持久化信念状态
+        """
+        if self.is_banned:
+            return []
+        
+        # 获取身份文本（仅使用初始身份信息）
+        identity_text = self.belief_system.identity.to_prompt_text()
+        
+        # 格式化上下文
+        exposed_text = format_exposed_posts(exposed_posts, current_time, max_posts=10,
+                                           include_stats=True, include_comments=True)
+        events_text = format_external_events(external_events, current_time)
+        hot_topics_text = format_hot_topics(hot_topics)
+        
+        # 获取CoT prompt并填充
+        prompt_template = get_cot_prompt(self.agent_type)
+        prompt = prompt_template.format(
+            event_background=self.event_background,
+            current_time=current_time,
+            identity_text=identity_text,
+            exposed_posts=exposed_text if exposed_text else "当前无可互动博文，可发布原创博文",
+            hot_topics=hot_topics_text,
+            external_events=events_text
+        )
+        
+        # 单次LLM调用（含CoT推理）
+        response = await self.api_pool.async_text_query(prompt, "", purpose='action')
+        
+        # 复用IntentionSystem的解析逻辑
+        intentions = self.intention_system._parse_intentions(response, exposed_posts)
+        
+        # 记录行为到记忆
+        for intention in intentions:
+            self._record_action_to_memory(intention, current_time)
+        
+        self.last_action_time = current_time
+        return intentions
+    
     def random_decision(self, exposed_posts: List[Dict], external_events: List[Dict],
                         current_time: str) -> List[IntentionResult]:
         """随机决策（非LLM驱动）- 基于身份的差异化行为分布"""
-        import random
         actions = []
         
         # 基于身份的行为分布配置 {action_type: weight}
@@ -251,9 +330,9 @@ class BaseAgent(ABC):
                 ))
             else:
                 # 无目标帖子或本身是发帖类行为 -> 发帖
-                if needs_target:
-                    # 降级：互动类变为发帖类
-                    action_type = 'short_post' if random.random() < 0.7 else 'long_post'
+                # if needs_target:
+                #     # 降级：互动类变为发帖类
+                #     action_type = 'short_post' if random.random() < 0.7 else 'long_post'
                 # 原创发帖
                 post_templates = {
                     '愤怒': ['这件事必须要有个说法！', '强烈谴责这种行为', '请相关部门介入调查'],
@@ -277,28 +356,38 @@ class BaseAgent(ABC):
         
         return actions
     
+    _ACTION_IMPORTANCE = {
+        'like': 0.3, 'repost': 0.7, 'repost_comment': 0.8,
+        'short_comment': 0.5, 'long_comment': 0.6,
+        'short_post': 0.7, 'long_post': 0.8
+    }
+    _ACTION_DESC = {
+        'like': '点赞了', 'repost': '转发了', 'repost_comment': '转发并评论了',
+        'short_comment': '评论了', 'long_comment': '评论了',
+        'short_post': '发布了', 'long_post': '发布了'
+    }
+
     def _get_action_desc(self, intention: IntentionResult) -> str:
-        """获取行为描述"""
-        action_type = intention.action_type
-        if action_type == 'like':
-            return f"点赞了@{intention.target_author}的博文"
-        elif action_type == 'repost':
-            return f"转发了@{intention.target_author}的博文"
-        elif action_type == 'repost_comment':
-            text = intention.text or ''
-            return f"转发并评论了：{text[:100] if text else ''}"
-        elif action_type in ['short_comment', 'long_comment']:
-            text = intention.text or ''
-            return f"评论了：{text[:100] if text else ''}"
-        else:
-            text = intention.text or ''
-            return f"发布了：{text[:100] if text else ''}"
-    
+        verb = self._ACTION_DESC.get(intention.action_type, '执行了')
+        target = f"@{intention.target_author}的博文" if intention.target_author else ''
+        text = (intention.text or '')[:100]
+        if target and text:
+            return f"{verb}{target}：{text}"
+        return f"{verb}{target or text}"
+
     def _get_action_importance(self, action_type: str) -> float:
-        """获取行为重要性"""
-        return {'like': 0.3, 'repost': 0.7, 'repost_comment': 0.8, 
-                'short_comment': 0.5, 'long_comment': 0.6, 
-                'short_post': 0.7, 'long_post': 0.8}.get(action_type, 0.5)
+        return self._ACTION_IMPORTANCE.get(action_type, 0.5)
+    
+    def external_intervention(self, node_event: Dict[str, Any]) -> IntentionResult:
+        """外部干预：直接执行节点事件的行为（绕过LLM）"""
+        sp = node_event.get('source_post', {})
+        return IntentionResult(
+            action_type='short_post',
+            text=(sp.get('content', '') or '分享信息')[:200],
+            topics=[node_event.get('topic', '')],
+            emotion=sp.get('emotion', '中性'),
+            stance=0.0
+        )
     
     @abstractmethod
     def _get_max_actions(self) -> int:

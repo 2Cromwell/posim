@@ -17,8 +17,8 @@ class KOLAgent(BaseAgent):
         self.activity_score = min(1.0, self.activity_score * 1.5)
     
     def _get_max_actions(self) -> int:
-        """KOL单次最多3个行为"""
-        return 3
+        """KOL单次最大行为数（仅作为上限参考，实际由LLM根据事件热度自主决定）"""
+        return 10
     
     @classmethod
     def from_dict(cls, data: Dict[str, Any], api_pool, event_background: str = "") -> 'KOLAgent':
