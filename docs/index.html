@@ -35,6 +35,7 @@
       <li><a href="#ebdi" data-en="EBDI Agent" data-cn="EBDI智能体">EBDI Agent</a></li>
       <li><a href="#results" data-en="Results" data-cn="实验结果">Results</a></li>
       <li><a href="#case-study" data-en="Case Study" data-cn="案例研究">Case Study</a></li>
+      <li><a href="javascript:void(0)" onclick="openComingSoon()" data-en="Docs" data-cn="文档">Docs</a></li>
       <li><a href="#citation" data-en="Citation" data-cn="引用">Citation</a></li>
       <li>
         <div class="lang-switch">
@@ -65,7 +66,7 @@
     <p class="hero-quote">"All models are wrong, but some are useful." — George E. P. Box</p>
 
     <div class="hero-buttons">
-      <a href="https://github.com/DeepCog/POSIM" class="btn btn-primary" target="_blank">
+      <a href="https://github.com/2Cromwell/POSIM" class="btn btn-primary" target="_blank">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
         <span data-en="Code" data-cn="代码">Code</span>
       </a>
@@ -74,8 +75,8 @@
         <span data-en="Paper (PDF)" data-cn="论文 (PDF)">Paper (PDF)</span>
       </a>
       <a href="javascript:void(0)" class="btn btn-outline" onclick="openComingSoon()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-        <span data-en="Online Demo" data-cn="在线演示">Online Demo</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span data-en="Online System" data-cn="在线系统">Online System</span>
       </a>
       <a href="#datasets" class="btn btn-outline">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
@@ -673,20 +674,40 @@
               <span class="finding-tag" data-en="What-If Analysis" data-cn="假设分析">What-If Analysis</span>
             </div>
           </div>
-          <div class="case-card-visual" style="display:flex;flex-direction:column;justify-content:center;align-items:center;padding:28px;background:var(--surface);gap:16px;">
-            <div style="text-align:center;">
-              <div style="font-size:2.2rem;font-weight:800;color:var(--primary);line-height:1;">5</div>
-              <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px;" data-en="PR Strategies" data-cn="公关策略">PR Strategies</div>
-            </div>
-            <div style="width:60px;height:1px;background:var(--border);"></div>
-            <div style="text-align:center;">
-              <div style="font-size:2.2rem;font-weight:800;color:#10b981;line-height:1;">&minus;6.1%</div>
-              <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px;" data-en="Best Strategy Effect" data-cn="最优策略效果">Best Strategy Effect</div>
-            </div>
-            <div style="width:60px;height:1px;background:var(--border);"></div>
-            <div style="text-align:center;">
-              <div style="font-size:2.2rem;font-weight:800;color:#ef4444;line-height:1;">+4.9%</div>
-              <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px;" data-en="Worst Strategy Effect" data-cn="最差策略效果">Worst Strategy Effect</div>
+          <div class="case-card-visual" style="display:flex;flex-direction:column;justify-content:center;align-items:center;padding:32px;background:var(--surface);gap:20px;">
+            <div style="width:100%;max-width:260px;">
+              <div style="font-size:0.95rem;font-weight:600;color:var(--text);margin-bottom:16px;text-align:center;" data-en="Negative Emotion by Strategy" data-cn="各策略负面情绪比例">Negative Emotion by Strategy</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <div class="strategy-bar">
+                  <div class="strategy-name" data-en="Actual Response" data-cn="实际应对">Actual Response</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:79.2%;background:#6b7280;"></div></div>
+                  <div class="bar-value">0.792</div>
+                </div>
+                <div class="strategy-bar">
+                  <div class="strategy-name" data-en="Swift Apology" data-cn="及时致歉">Swift Apology</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:74.9%;background:#10b981;"></div></div>
+                  <div class="bar-value">0.749</div>
+                </div>
+                <div class="strategy-bar">
+                  <div class="strategy-name" data-en="Proactive Transparency" data-cn="主动透明">Proactive Transparency</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:77.3%;background:#3b82f6;"></div></div>
+                  <div class="bar-value">0.773</div>
+                </div>
+                <div class="strategy-bar">
+                  <div class="strategy-name" style="font-weight:700;" data-en="Consumer Dialogue" data-cn="消费者对话">Consumer Dialogue</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:74.4%;background:#059669;"></div></div>
+                  <div class="bar-value" style="color:#059669;font-weight:700;">0.744</div>
+                </div>
+                <div class="strategy-bar">
+                  <div class="strategy-name" data-en="Strategic Silence" data-cn="战略沉默">Strategic Silence</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:83.1%;background:#ef4444;"></div></div>
+                  <div class="bar-value">0.831</div>
+                </div>
+              </div>
+              <div style="margin-top:12px;text-align:center;">
+                <div style="font-size:0.8rem;color:#059669;font-weight:600;" data-en="Consumer Dialogue: Best Strategy" data-cn="消费者对话：最优策略">Consumer Dialogue: Best Strategy</div>
+                <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:2px;" data-en="Lower negative emotion indicates better PR effectiveness" data-cn="负面情绪越低，公关效果越好">Lower negative emotion indicates better PR effectiveness</div>
+              </div>
             </div>
           </div>
         </div>
@@ -763,18 +784,24 @@
     <p data-en="POSIM — Public Opinion Simulator &middot; Released under &lt;a href='https://opensource.org/licenses/MIT'&gt;MIT License&lt;/a&gt;" data-cn="POSIM — 公共舆情仿真器 &middot; 基于 &lt;a href='https://opensource.org/licenses/MIT'&gt;MIT 许可证&lt;/a&gt; 开源">
       POSIM — Public Opinion Simulator &middot; Released under <a href="https://opensource.org/licenses/MIT">MIT License</a>
     </p>
-    <p style="margin-top:8px;" data-en="Questions or suggestions? Please open an &lt;a href='https://github.com/DeepCog/POSIM/issues'&gt;Issue&lt;/a&gt; on GitHub." data-cn="有问题或建议？欢迎在 GitHub 上提交 &lt;a href='https://github.com/DeepCog/POSIM/issues'&gt;Issue&lt;/a&gt;。">
-      Questions or suggestions? Please open an <a href="https://github.com/DeepCog/POSIM/issues">Issue</a> on GitHub.
+    <p style="margin-top:8px;" data-en="Questions or suggestions? Please open an &lt;a href='https://github.com/2Cromwell/POSIM/issues'&gt;Issue&lt;/a&gt; on GitHub." data-cn="有问题或建议？欢迎在 GitHub 上提交 &lt;a href='https://github.com/2Cromwell/POSIM/issues'&gt;Issue&lt;/a&gt;。">
+      Questions or suggestions? Please open an <a href="https://github.com/2Cromwell/POSIM/issues">Issue</a> on GitHub.
     </p>
+    <div class="pip-announcement" style="margin-top:16px;padding:12px 16px;background:linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);border-radius:8px;border:1px solid #0ea5e9;">
+      <span style="display:inline-flex;align-items:center;color:#0369a1;font-weight:600;">
+        <svg style="width:16px;height:16px;margin-right:6px;fill:currentColor;" viewBox="0 0 24 24"><path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/><path d="M10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9z"/></svg>
+        <span data-en="PyPI package coming soon!" data-cn="PyPI 包即将发布！">PyPI package coming soon!</span>
+      </span>
+    </div>
   </div>
 </footer>
 
 <!-- Coming Soon Modal -->
 <div class="modal-overlay" id="comingSoonModal" onclick="closeComingSoon(event)">
   <div class="modal-box">
-    <span class="modal-icon">🚀</span>
-    <h3 data-en="Coming Soon" data-cn="敬请期待">Coming Soon</h3>
-    <p data-en="The POSIM Online Demo system is currently under active development. Stay tuned for an interactive simulation experience!" data-cn="POSIM 在线演示系统正在积极开发中，敬请期待交互式仿真体验！">The POSIM Online Demo system is currently under active development. Stay tuned for an interactive simulation experience!</p>
+    <span class="modal-icon">⚙️</span>
+    <h3 data-en="Under Development" data-cn="系统开发中">Under Development</h3>
+    <p data-en="The POSIM Online Demo is an interactive simulation system currently under active development. It will allow you to configure experiments, run simulations, and visualize results in real-time. Stay tuned for the full release!" data-cn="POSIM 在线演示是一个交互式仿真系统，正在积极开发中。未来将支持实验配置、实时仿真运行与结果可视化。敬请期待完整发布！">The POSIM Online Demo is an interactive simulation system currently under active development. It will allow you to configure experiments, run simulations, and visualize results in real-time. Stay tuned for the full release!</p>
     <button class="btn btn-primary" onclick="closeComingSoon()" data-en="Got it" data-cn="知道了">Got it</button>
   </div>
 </div>

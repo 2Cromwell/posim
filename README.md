@@ -456,7 +456,7 @@ posim/
 ### 📦 安装
 
 ```bash
-git clone https://github.com/DeepCog/POSIM.git
+git clone https://github.com/2Cromwell/POSIM.git
 cd POSIM
 
 # 推荐使用 conda
@@ -640,5 +640,5 @@ EBDI 三个子系统通过结构化中间状态通信，可独立替换：
 ---
 
 <p align="center">
-  <i>如有问题或建议，欢迎提交 <a href="https://github.com/DeepCog/POSIM/issues">Issue</a></i>
+  <i>如有问题或建议，欢迎提交 <a href="https://github.com/2Cromwell/POSIM/issues">Issue</a></i>
 </p>

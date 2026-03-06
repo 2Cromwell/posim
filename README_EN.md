@@ -456,7 +456,7 @@ posim/
 ### 📦 Setup
 
 ```bash
-git clone https://github.com/DeepCog/POSIM.git
+git clone https://github.com/2Cromwell/POSIM.git
 cd POSIM
 
 conda create -n posim python=3.10
@@ -638,5 +638,5 @@ This project is released under the [MIT License](LICENSE).
 ---
 
 <p align="center">
-  <i>Questions or suggestions? Please open an <a href="https://github.com/DeepCog/POSIM/issues">Issue</a>.</i>
+  <i>Questions or suggestions? Please open an <a href="https://github.com/2Cromwell/POSIM/issues">Issue</a>.</i>
 </p>

@@ -466,6 +466,15 @@ const caseObserver = new IntersectionObserver((entries) => {
           card.style.transform = 'translateY(0)';
         }, i * 200);
       });
+      // Animate strategy bars
+      const bars = entry.target.querySelectorAll('.bar-fill');
+      bars.forEach(bar => {
+        const targetWidth = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => {
+          bar.style.width = targetWidth;
+        }, 800);
+      });
       caseObserver.unobserve(entry.target);
     }
   });
