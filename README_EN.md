@@ -21,27 +21,27 @@
 
 ---
 
-## Table of Contents
+## 📖 Table of Contents
 
-- [Why POSIM?](#why-posim)
-- [Key Contributions](#key-contributions)
-- [Framework Overview](#framework-overview)
-- [EBDI Metacognitive Agent](#ebdi-metacognitive-agent)
-- [Simulation Environment](#simulation-environment)
-- [Strategy Evaluation & Computational Experiments](#strategy-evaluation--computational-experiments)
-- [Three-Tier Validation Framework](#three-tier-validation-framework)
-- [Datasets](#datasets)
-- [Results & Analysis](#results--analysis)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Extensibility](#extensibility)
-- [Citation](#citation)
-- [License](#license)
+- [💡 Why POSIM?](#why-posim)
+- [✨ Key Contributions](#key-contributions)
+- [🏗️ Framework Overview](#framework-overview)
+- [🧠 EBDI Metacognitive Agent](#ebdi-metacognitive-agent)
+- [🌍 Simulation Environment](#simulation-environment)
+- [🧪 Strategy Evaluation & Computational Experiments](#strategy-evaluation--computational-experiments)
+- [🛡️ Three-Tier Validation Framework](#three-tier-validation-framework)
+- [💾 Datasets](#datasets)
+- [📊 Results & Analysis](#results--analysis)
+- [🌳 Project Structure](#project-structure)
+- [⚙️ Installation](#installation)
+- [🚀 Quick Start](#quick-start)
+- [🔌 Extensibility](#extensibility)
+- [📝 Citation](#citation)
+- [📄 License](#license)
 
 ---
 
-## Why POSIM?
+## 💡 Why POSIM?
 
 A breaking event can sweep across an entire social network within hours — tens of thousands of users flood the comment sections, emotions escalate through repost chains, and a single post from an opinion leader can reshape the course of public discourse. Understanding and anticipating these complex group dynamics matters for social governance, crisis response, and public policy.
 
@@ -60,7 +60,7 @@ Recent breakthroughs in Large Language Models (LLMs) open up new possibilities: 
 | Temporal Precision | ★★★ | ★★ | ★★★★ | ★★★★ | ★★ | **★★★★★** |
 | Scalability | ★★★ | ★★ | ★★★★ | ★★★ | ★★ | **★★★★★** |
 
-## Key Contributions
+## ✨ Key Contributions
 
 1. **EBDI Metacognitive Agent Architecture** — Embeds LLMs into a layered cognitive framework (Perception → Belief → Desire → Intention → Action). Three cognitive subsystems are each powered by independent LLM calls, passing structured intermediate states between modules. The behavior generation process becomes fully traceable — no longer a "prompt in, answer out" black box.
 
@@ -72,7 +72,7 @@ Recent breakthroughs in Large Language Models (LLMs) open up new possibilities: 
 
 ---
 
-## Framework Overview
+## 🏗️ Framework Overview
 
 <p align="center">
   <img src="assets/framework_overview.png" alt="POSIM Framework Overview" width="95%">
@@ -89,7 +89,7 @@ POSIM consists of three core components working in concert:
 
 ---
 
-## EBDI Metacognitive Agent
+## 🧠 EBDI Metacognitive Agent
 
 Traditional reactive agents are little more than stateless behavior generators — input in, output out, with no insight into what happened in between. POSIM takes a fundamentally different approach: it extends the classical BDI cognitive architecture with an emotional dimension, building metacognitive agents with **explicit self-aware cognitive states** and **auditable multi-stage decision chains**.
 
@@ -97,7 +97,7 @@ The cognitive pipeline is formalized as:
 
 $$\text{Perception}(P_t) \;\to\; \text{Belief}(B_t) \;\to\; \text{Desire}(D_t) \;\to\; \text{Intention}(I_t) \;\to\; \text{Action}(A_t)$$
 
-### Belief Subsystem — How Agents "Understand the World"
+### 💭 Belief Subsystem — How Agents "Understand the World"
 
 Psychological research shows that different cognitive layers have different stability — core personality traits remain highly stable in the short term, while immediate emotions fluctuate rapidly with information input. Based on this cognitive stratification, POSIM designs a four-layer belief system:
 
@@ -118,7 +118,7 @@ Notable design details:
 - **Emotion triple-drive**: Temporal decay ($\mathbf{e}(t) = \mathbf{e}(t_0) \cdot e^{-\lambda_e(t-t_0)}$), content stimulation, and social contagion from neighbors ($(1-\rho) \cdot \mathbf{e}_i + \rho \cdot \bar{\mathbf{e}}_{\text{neighbor}}$).
 - **Explicit cognitive bias injection**: Belief updates incorporate confirmation bias, anchoring effect, emotion-first reasoning, and simplistic attribution through prompt engineering.
 
-### Desire Subsystem — What Agents "Want to Do"
+### 🎯 Desire Subsystem — What Agents "Want to Do"
 
 Social media participation motivations are highly diverse — some users vent anger, others seek information, and many are simply there for the spectacle. The desire subsystem leverages LLM commonsense reasoning to infer behavioral drivers, outputting a weighted motivation list:
 
@@ -126,7 +126,7 @@ Social media participation motivations are highly diverse — some users vent an
 
 This motivation list constrains downstream intention planning — when emotional venting dominates, agents gravitate toward short comments with intense emotional expression; when information-seeking leads, they tend toward reposts with commentary or long-form posts.
 
-### Intention Subsystem — How Agents "Take Action"
+### 🛠️ Intention Subsystem — How Agents "Take Action"
 
 Unlike single-step behavior generation, the intention subsystem uses a **three-level chain-of-thought** for progressive decision-making:
 
@@ -145,7 +145,7 @@ Unlike single-step behavior generation, the intention subsystem uses a **three-l
 
 This decomposition provides **explicit strategy constraints** for content generation, preventing LLMs from defaulting to bland, averaged-out text. Every decision at each level is recorded, making the entire process fully traceable.
 
-### Four Heterogeneous Agent Types
+### 🎭 Four Heterogeneous Agent Types
 
 Real public opinion events involve complex interactions among citizens, opinion leaders, media, and government. All four types share the same EBDI cognitive pipeline, differentiated through role-specific guiding prompts:
 
@@ -160,9 +160,9 @@ Real public opinion events involve complex interactions among citizens, opinion 
 
 ---
 
-## Simulation Environment
+## 🌍 Simulation Environment
 
-### Hawkes Point Process Time Engine
+### ⏱️ Hawkes Point Process Time Engine
 
 Real-world public opinion activity exhibits highly uneven temporal distribution — a single piece of breaking news can trigger thousands of reposts within minutes, while inter-event periods see dramatically lower activity. Uniform time-stepping simply cannot reproduce this.
 
@@ -179,7 +179,7 @@ $$\lambda(t) = \underbrace{\mu}_{\text{background}} + \underbrace{\sum \alpha_{e
 | Endogenous decay | $\beta_{int}$ | 0.16 | Short-term stimulus decay from interactions |
 | Circadian amplitude | $s_{circ}$ | 0.3 | Nighttime activity reduction magnitude |
 
-### Virtual Social Media Platform
+### 📱 Virtual Social Media Platform
 
 Once the time engine determines which agents to activate each step, the virtual platform determines what they **see** and what **attracts** them:
 
@@ -195,7 +195,7 @@ The system retains exploration slots to break filter bubbles, maintains recommen
 
 ---
 
-## Strategy Evaluation & Computational Experiments
+## 🧪 Strategy Evaluation & Computational Experiments
 
 POSIM is not just a simulator — it doubles as a computational experiment platform for strategy evaluation. The question decision-makers typically face: "If we take a certain intervention, how will public opinion shift?"
 
@@ -216,7 +216,7 @@ POSIM is not just a simulator — it doubles as a computational experiment platf
 
 ---
 
-## Three-Tier Validation Framework
+## 🛡️ Three-Tier Validation Framework
 
 Drawing on the classical V&V (Verification and Validation) principles, POSIM establishes a progressive validation framework covering **mechanism → phenomena → data**:
 
@@ -256,7 +256,7 @@ Tier 3 encompasses **9 quantitative metrics** across three dimensions:
 
 ---
 
-## Datasets
+## 💾 Datasets
 
 Experiments are conducted on three representative public opinion events collected from Sina Weibo, spanning social controversy, campus incidents, and food safety — covering diverse evolution patterns and participant structures. Simulation precision: **10 min/step**.
 
@@ -270,9 +270,9 @@ Data preprocessing pipeline: deduplication by post ID → low-activity user filt
 
 ---
 
-## Results & Analysis
+## 📊 Results & Analysis
 
-### Micro-Level Behavioral Mechanism Validation
+### 🔬 Micro-Level Behavioral Mechanism Validation
 
 100 randomly sampled users, 12 simulation rounds, four methods under identical conditions:
 
@@ -285,11 +285,11 @@ Data preprocessing pipeline: deduplication by post ID → low-activity user filt
 
 An interesting observation: while CoT outperforms Direct methods on chain consistency, its decision robustness is actually the *lowest* among all four (0.541). Without stable state anchoring in a single call, input perturbations ripple through the entire reasoning chain. EBDI's explicit belief states provide a cognitive anchoring effect — even under equivalent perturbations, stable beliefs provide consistent decision anchor points.
 
-### Macro-Level Emergent Phenomena
+### 🌊 Macro-Level Emergent Phenomena
 
 All macro phenomena below emerged **spontaneously from agent interactions** — none were pre-programmed.
 
-#### Opinion Lifecycle
+#### 🎢 Opinion Lifecycle
 
 <p align="center">
   <img src="assets/fig_lifecycle.png" alt="Opinion Lifecycle" width="85%">
@@ -298,7 +298,7 @@ All macro phenomena below emerged **spontaneously from agent interactions** — 
 
 The simulation clearly reproduces the multi-stage lifecycle from outbreak → plateau → resurgence → decline. E₁ (food hygiene video exposure) triggers rapid escalation; E₂ (ceasefire announcement) leads to a plateau; E₄ (leaked group chat screenshots) reignites discussion; E₅ (state media commentary) triggers the simulation's peak activity — a textbook "rekindling" and "state media framing triggers secondary outbreak" effect. The cumulative S-curve closely matches diffusion theory predictions.
 
-#### Multi-Agent Behavioral Heterogeneity
+#### 👥 Multi-Agent Behavioral Heterogeneity
 
 <p align="center">
   <img src="assets/fig_heterogeneity.png" alt="Agent Heterogeneity" width="90%">
@@ -307,7 +307,7 @@ The simulation clearly reproduces the multi-stage lifecycle from outbreak → pl
 
 Citizens and KOLs maintain mean emotional intensity of 0.645 and 0.603 respectively — consistently in the high-arousal zone with sharper post-event fluctuations. Media and Government agents remain stable in the low-arousal zone, producing the "public emotional, officials neutral" stratification pattern observed in real events. The radar charts show distinctly different polygonal shapes: Citizens excel in emotional engagement and interaction frequency, KOLs in influence and output volume, Media in content quality and neutral expression, Government in low-frequency high-authority presence.
 
-#### Emotional Polarization
+#### ⚡ Emotional Polarization
 
 <p align="center">
   <img src="assets/fig_polarization.png" alt="Emotional Polarization" width="55%">
@@ -316,7 +316,7 @@ Citizens and KOLs maintain mean emotional intensity of 0.645 and 0.603 respectiv
 
 Validation against emotional arousal theory and emotional contagion hypothesis: high-arousal emotion ratio reaches 73.5%, comment-chain emotion consistency hits 0.772, and the escalation/de-escalation ratio is 4.78 (a significant ratchet effect). The polarization index rises from 0.41 early on to 0.67 late-stage (63% increase, $p < 0.001$), consistent with echo chamber theory predictions.
 
-#### Scale-Free Topology & Cascade Power-Law
+#### 🕸️ Scale-Free Topology & Cascade Power-Law
 
 <p align="center">
   <img src="assets/fig_powerlaw.png" alt="Power-law Distribution" width="70%">
@@ -325,7 +325,7 @@ Validation against emotional arousal theory and emotional contagion hypothesis: 
 
 Interaction network degree distribution yields power-law exponent $\gamma = 1.87$ ($R^2 = 0.880$), within the 1.5–3 range typically reported for real social networks. Cascade size CCDF fits $\alpha = 3.70$ ($R^2 = 0.880$), reproducing the "most posts go unnoticed, a few go viral" long-tail phenomenon.
 
-### Statistical Calibration Results
+### ⚖️ Statistical Calibration Results
 
 <p align="center">
   <img src="assets/fig_calibration.png" alt="Calibration Results" width="80%">
@@ -362,7 +362,7 @@ The gap is most striking on the LE dataset (0.910 vs. 0.680) — the Luxury Earr
 
 > Overall: POSIM's behavioral, content, and topological metrics outperform the best baseline by **5.0%**, **13.0%**, and **8.5%** respectively.
 
-### Ablation Study
+### 🧩 Ablation Study
 
 Conducted on the LE dataset to verify the necessity of each module:
 
@@ -380,7 +380,7 @@ The functional division is clear-cut:
 - **Removing Desire** — Content layer degrades most severely (Confr. Sim. falls to 0.682, the lowest across all variants); motivation constraints are the core driver of intense discourse
 - **Removing Intention** — Lexical diversity deviation worsens most (0.064), network similarity shows the largest drop; the three-level chain-of-thought is critical for diversity and topology
 
-### Case Studies: Cognitive Priming & Counterfactual Evaluation
+### 🔍 Case Studies: Cognitive Priming & Counterfactual Evaluation
 
 <p align="center">
   <img src="assets/fig_cognitive_priming.png" alt="Cognitive Priming Experiment" width="90%">
@@ -393,7 +393,7 @@ The functional division is clear-cut:
 
 ---
 
-## Project Structure
+## 🌳 Project Structure
 
 ```
 posim/
@@ -442,9 +442,9 @@ posim/
 
 ---
 
-## Installation
+## ⚙️ Installation
 
-### System Requirements
+### 💻 System Requirements
 
 | Item | Minimum | Recommended |
 |------|---------|-------------|
@@ -453,7 +453,7 @@ posim/
 | RAM | 16 GB | 32 GB+ (large-scale simulation) |
 | GPU | — | Recommended (sentence-transformers acceleration) |
 
-### Setup
+### 📦 Setup
 
 ```bash
 git clone https://github.com/DeepCog/POSIM.git
@@ -465,7 +465,7 @@ conda activate posim
 pip install -r requirements.txt
 ```
 
-### Dependencies
+### 📚 Dependencies
 
 | Package | Version | Purpose |
 |---------|---------|---------|
@@ -480,9 +480,9 @@ pip install -r requirements.txt
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
-### 1. Configure LLM
+### 1️⃣ Configure LLM
 
 POSIM supports any OpenAI API-compatible service (SiliconFlow, local vLLM, OpenAI, etc.):
 
@@ -512,7 +512,7 @@ POSIM supports any OpenAI API-compatible service (SiliconFlow, local vLLM, OpenA
 
 The unified resource pool manages multiple LLM endpoints with multi-model mixed driving, usage-based routing, endpoint-level concurrency control, round-robin load balancing, and automatic failover. Sampling parameters are randomly perturbed per call to avoid output homogenization.
 
-### 2. Prepare Data
+### 2️⃣ Prepare Data
 
 Each scenario requires four data files:
 
@@ -523,7 +523,7 @@ Each scenario requires four data files:
 | `initial_posts.json` | Initial post data (content, author, timestamp, type, keywords) |
 | `relations.json` | User follow relationships |
 
-### 3. Run Simulation
+### 3️⃣ Run Simulation
 
 ```bash
 python scripts/tianjiaerhuan/run_with_monitor.py
@@ -531,7 +531,7 @@ python scripts/tianjiaerhuan/run_with_monitor.py
 
 Flow: Load user data → Initialize EBDI belief systems → Build social network & recommendation → Start Hawkes time engine → Execute cognitive pipeline per step (recommend→belief→desire→intention, async concurrent) → Emotional contagion → Update trending → Record trajectories. WebSocket real-time monitoring dashboard available.
 
-### 4. Evaluate
+### 4️⃣ Evaluate
 
 ```bash
 # Single event
@@ -569,7 +569,7 @@ Results output to `vis_results/`: behavioral calibration, activity calibration, 
 
 ---
 
-## Extensibility
+## 🔌 Extensibility
 
 Thanks to the highly decoupled modular design, all core components can be independently replaced and extended through standard interfaces.
 
@@ -617,7 +617,7 @@ Add new endpoints to `llm_api_configs` in the config file — the framework uses
 
 ---
 
-## Citation
+## 📝 Citation
 
 If this work is helpful to your research, please cite:
 
@@ -631,7 +631,7 @@ If this work is helpful to your research, please cite:
 }
 ```
 
-## License
+## 📄 License
 
 This project is released under the [MIT License](LICENSE).
 
