@@ -1,0 +1,256 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand*\HyPL@Entry[1]{}
+\csgdef{mark@corau1}{1}
+\emailauthor{}{作者}
+\creditauthor{Conceptualization, Methodology, Software, Writing - Original draft}{作者}
+\citation{gonzalez_emotional_2010}
+\citation{goldstein_structure_2012}
+\citation{bonabeau_agent-based_2002}
+\citation{kramer_experimental_2014,zhao_seismic_2015,mcculloch_calibrating_2022}
+\citation{daley_stochastic_1965}
+\citation{granovetter_threshold_1978}
+\citation{macal_tutorial_2010}
+\citation{castellano_statistical_2009}
+\citation{gao_s3_2023}
+\citation{mou_unveiling_2024}
+\citation{liu_agent-based_2024}
+\citation{zhang_spark_2025}
+\citation{yao_social_2025}
+\citation{zhang_trendsim_2025}
+\citation{yang_oasis_2025}
+\citation{liu_lmagent_2026}
+\citation{wang_survey_2024}
+\citation{park_generative_2023}
+\citation{gao_s3_2023,chuang_simulating_2024}
+\citation{bratman_intention_1987,rao_bdi_1995}
+\citation{hawkes_spectra_1971}
+\citation{sargent_verification_2013}
+\HyPL@Entry{0<</S/D>>}
+\@writefile{toc}{\contentsline {section}{\numberline {1}引言}{1}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{1}{引言}{section.1}{}}
+\citation{daley_stochastic_1965}
+\citation{watts_strogatz_1998,barabasi_albert_1999}
+\citation{jiang_weibo_spnr_2020}
+\citation{granovetter_threshold_1978,watts_cascades_2002}
+\citation{forrester_industrial_1961,sterman_business_2000}
+\citation{gao_sd_public_opinion_2019,liu_evolution_2024}
+\citation{hawkes_spectra_1971}
+\citation{zhao_seismic_2015}
+\citation{rizoiu_expecting_2017}
+\citation{zhang_opinion-aware_2023}
+\citation{bonabeau_agent-based_2002,macal_tutorial_2010}
+\citation{grimm_odd_2010}
+\citation{mcculloch_calibrating_2022}
+\citation{degroot_reaching_1974}
+\citation{deffuant_mixing_2000}
+\citation{hegselmann_opinion_2002}
+\citation{castellano_statistical_2009,bernardo_bc_survey_2024}
+\citation{chen_evolution_2025,wu_public_2023}
+\citation{liu_agent-based_2024,banisch_agent_2012,cinelli2021echo_ipm}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Comparison of POSIM with existing public opinion simulation platforms. ``$\bigstar $'' count indicates capability level (1--5). $\checkmark $ = supported, $\times $ = unsupported.}}{2}{table.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:comparison}{{1}{2}{Comparison of POSIM with existing public opinion simulation platforms. ``$\bigstar $'' count indicates capability level (1--5). $\checkmark $ = supported, $\times $ = unsupported}{table.caption.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}相关工作}{2}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{2}{相关工作}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}舆情传播建模}{2}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}基于智能体的建模与观点动力学}{2}{subsection.2.2}\protected@file@percent }
+\citation{wang_survey_2024}
+\citation{park_generative_2023}
+\citation{gao_s3_2023}
+\citation{zhang_spark_2025}
+\citation{zhang_llm-aidsim_2025,hu_llm-enhanced_2024}
+\citation{yao_social_2025}
+\citation{yang_oasis_2025}
+\citation{mou_unveiling_2024}
+\citation{zhang_trendsim_2025}
+\citation{box_draper_1987_emprical_modelbuilding}
+\citation{myint2024crisis_mtl_intent}
+\citation{bratman_intention_1987,rao_bdi_1995}
+\citation{wei_chain_2022}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}大语言模型驱动的社会仿真}{3}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}研究目标}{3}{section.3}\protected@file@percent }
+\newlabel{sec:objective}{{3}{3}{研究目标}{section.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}POSIM框架}{3}{section.4}\protected@file@percent }
+\newlabel{sec:method}{{4}{3}{POSIM框架}{section.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces POSIM框架总体架构。(1)~初始化模块基于真实用户数据和LLM驱动的深度访谈生成多类型智能体（普通用户、意见领袖、媒体账号、政府账号）的初始认知状态；(2)~元认知智能体架构（左侧）实现感知$\to $信念$\to $欲望$\to $意图$\to $行为的EBDI认知决策链路，信念系统包含角色身份、心理认知、事件观点和情绪四类信念，意图系统通过三阶段推理生成行为类型、表达策略和具体内容；(3)~仿真环境（中上）由霍克斯自激点过程驱动的时间引擎控制智能体激活，虚拟社交媒体平台提供个性化推荐和社交网络交互；(4)~策略推演（右下）由干预器、仿真器和评估器三个模块组成，支持事件队列注入、节点控制和平台策略等多种干预手段，仿真器通过检查点回调机制生成多条平行演化轨迹以支持反事实推理，评估器从热度曲线、情感比例、观点分布和话题迁移等维度量化干预效果。}}{4}{figure.caption.2}\protected@file@percent }
+\newlabel{fig:framework}{{1}{4}{POSIM框架总体架构。(1)~初始化模块基于真实用户数据和LLM驱动的深度访谈生成多类型智能体（普通用户、意见领袖、媒体账号、政府账号）的初始认知状态；(2)~元认知智能体架构（左侧）实现感知$\to $信念$\to $欲望$\to $意图$\to $行为的EBDI认知决策链路，信念系统包含角色身份、心理认知、事件观点和情绪四类信念，意图系统通过三阶段推理生成行为类型、表达策略和具体内容；(3)~仿真环境（中上）由霍克斯自激点过程驱动的时间引擎控制智能体激活，虚拟社交媒体平台提供个性化推荐和社交网络交互；(4)~策略推演（右下）由干预器、仿真器和评估器三个模块组成，支持事件队列注入、节点控制和平台策略等多种干预手段，仿真器通过检查点回调机制生成多条平行演化轨迹以支持反事实推理，评估器从热度曲线、情感比例、观点分布和话题迁移等维度量化干预效果。}{figure.caption.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}元认知智能体架构}{4}{subsection.4.1}\protected@file@percent }
+\newlabel{subsec:agent}{{4.1}{4}{元认知智能体架构}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}信念子系统}{4}{subsubsection.4.1.1}\protected@file@percent }
+\citation{buckels2014trolls}
+\citation{ellis_reason_1962}
+\citation{ekman_basic_1992}
+\citation{hatfield_emotional_1994,kramer_experimental_2014,fan2023emotional_contagion}
+\citation{katz_uses_1973}
+\newlabel{eq:mmr}{{4}{5}{信念子系统}{equation.4.4}{}}
+\newlabel{eq:belief_update}{{5}{5}{信念子系统}{equation.4.5}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}欲望子系统}{5}{subsubsection.4.1.2}\protected@file@percent }
+\citation{chen_evolution_2025,wu_public_2023}
+\citation{katz_personal_1955}
+\citation{hawkes_spectra_1971}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}意图子系统}{6}{subsubsection.4.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.4}异质性智能体}{6}{subsubsection.4.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}仿真环境}{6}{subsection.4.2}\protected@file@percent }
+\newlabel{subsec:env}{{4.2}{6}{仿真环境}{subsection.4.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}时间-事件混合驱动内核}{6}{subsubsection.4.2.1}\protected@file@percent }
+\citation{wu2023algorithmic_exposure}
+\citation{cinelli_echo_2021}
+\citation{bail_opposing_2018}
+\newlabel{eq:hawkes}{{8}{7}{时间-事件混合驱动内核}{equation.4.8}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}社交网络与信息流机制}{7}{subsubsection.4.2.2}\protected@file@percent }
+\newlabel{eq:recommend}{{9}{7}{社交网络与信息流机制}{equation.4.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}策略推演}{7}{subsection.4.3}\protected@file@percent }
+\newlabel{subsec:strategy}{{4.3}{7}{策略推演}{subsection.4.3}{}}
+\citation{sargent_verification_2013}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Descriptive statistics of three public opinion event datasets.}}{8}{table.caption.3}\protected@file@percent }
+\newlabel{tab:dataset}{{2}{8}{Descriptive statistics of three public opinion event datasets}{table.caption.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}实验}{8}{section.5}\protected@file@percent }
+\newlabel{sec:exp}{{5}{8}{实验}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}实验设置}{8}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.1}数据集}{8}{subsubsection.5.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.2}验证框架}{8}{subsubsection.5.1.2}\protected@file@percent }
+\citation{guo_stochastic_2024,chen_evolution_2025}
+\citation{kong_exploring_2020}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Micro-level behavioral mechanism validation results (mean$\pm $std).}}{9}{table.caption.4}\protected@file@percent }
+\newlabel{tab:micro}{{3}{9}{Micro-level behavioral mechanism validation results (mean$\pm $std)}{table.caption.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}微观行为机制验证}{9}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}对比方法}{9}{subsubsection.5.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.2}评估设置与结果}{9}{subsubsection.5.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}宏观现象涌现验证}{9}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}舆情生命周期}{9}{subsubsection.5.3.1}\protected@file@percent }
+\citation{berger_what_2012}
+\citation{hatfield_emotional_1994}
+\citation{berger_what_2012}
+\citation{hatfield_emotional_1994}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces 仿真舆情生命周期：发博量变化（柱状图，左轴）与累积发博百分比的观测S曲线（实线，右轴）及Logistic拟合曲线（虚线）。$E_1$--$E_7$标记外生事件注入时间点。}}{10}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:lifecycle}{{2}{10}{仿真舆情生命周期：发博量变化（柱状图，左轴）与累积发博百分比的观测S曲线（实线，右轴）及Logistic拟合曲线（虚线）。$E_1$--$E_7$标记外生事件注入时间点。}{figure.caption.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces 四类智能体行为异质性：(a)~情绪强度时序演化；(b)~内容长度分布；(c)~多维行为特征雷达图。}}{10}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:heterogeneity}{{3}{10}{四类智能体行为异质性：(a)~情绪强度时序演化；(b)~内容长度分布；(c)~多维行为特征雷达图。}{figure.caption.6}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.2}多主体行为异质性}{10}{subsubsection.5.3.2}\protected@file@percent }
+\citation{berger_what_2012}
+\citation{hatfield_emotional_1994}
+\citation{cinelli_echo_2021}
+\citation{barabasi_albert_1999}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Emotional arousal theory validation metrics.}}{11}{table.caption.7}\protected@file@percent }
+\newlabel{tab:emotion}{{4}{11}{Emotional arousal theory validation metrics}{table.caption.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces 情绪极化指数（PI）随仿真轮次的演化。实线为PI均值，阴影为90\% Bootstrap置信区间，虚线标注早期与晚期均值。}}{11}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:polarization}{{4}{11}{情绪极化指数（PI）随仿真轮次的演化。实线为PI均值，阴影为90\% Bootstrap置信区间，虚线标注早期与晚期均值。}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.3}情绪唤醒与极化效应}{11}{subsubsection.5.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.4}无标度拓扑与级联幂律}{11}{subsubsection.5.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}统计结果校准}{11}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.1}对比方法}{11}{subsubsection.5.4.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces 互动网络的拓扑特性：(a)~度分布幂律拟合$P(k) \sim k^{-\mitgamma }$；(b)~级联规模CCDF$P(X \geq s) \sim s^{-\mitalpha }$。}}{12}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:powerlaw}{{5}{12}{互动网络的拓扑特性：(a)~度分布幂律拟合$P(k) \sim k^{-\gamma }$；(b)~级联规模CCDF$P(X \geq s) \sim s^{-\alpha }$。}{figure.caption.9}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.2}评估指标}{12}{subsubsection.5.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.3}校准结果}{12}{subsubsection.5.4.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Statistical calibration results across three events (LE\,=\,Luxury Earring, WL\,=\,WHU Library, XF\,=\,Xibei Prepared Food). \textbf  {Bold}: best per dataset; \text  {---}: not applicable. \textcolor {gaingreen}{Green}: gain of POSIM over the second-best method.}}{13}{table.caption.10}\protected@file@percent }
+\newlabel{tab:calibration}{{5}{13}{Statistical calibration results across three events (LE\,=\,Luxury Earring, WL\,=\,WHU Library, XF\,=\,Xibei Prepared Food). \textbf {Bold}: best per dataset; \na : not applicable. \textcolor {gaingreen}{Green}: gain of POSIM over the second-best method}{table.caption.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}消融实验}{13}{subsection.5.5}\protected@file@percent }
+\citation{batson_empathy_1991}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Ablation study results (LE dataset). \underline  {Underline} marks cases where a variant outperforms the full model.}}{14}{table.caption.11}\protected@file@percent }
+\newlabel{tab:ablation}{{6}{14}{Ablation study results (LE dataset). \underline {Underline} marks cases where a variant outperforms the full model}{table.caption.11}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Cognitive priming experiment results (200 agents, 30 steps). Coverage denotes the proportion of agents receiving cognitive priming.}}{14}{table.caption.12}\protected@file@percent }
+\newlabel{tab:priming}{{7}{14}{Cognitive priming experiment results (200 agents, 30 steps). Coverage denotes the proportion of agents receiving cognitive priming}{table.caption.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}案例研究}{14}{section.6}\protected@file@percent }
+\newlabel{sec:case}{{6}{14}{案例研究}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}认知引导实验}{14}{subsection.6.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces 认知引导实验：(a)~100\%覆盖率下四种条件的NER时序演化；(b)~三种策略的NER变化幅度随覆盖率的剂量-效应关系。}}{15}{figure.caption.13}\protected@file@percent }
+\newlabel{fig:priming}{{6}{15}{认知引导实验：(a)~100\%覆盖率下四种条件的NER时序演化；(b)~三种策略的NER变化幅度随覆盖率的剂量-效应关系。}{figure.caption.13}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Counterfactual strategy evaluation results (200 agents, 20 steps).}}{15}{table.caption.14}\protected@file@percent }
+\newlabel{tab:counter}{{8}{15}{Counterfactual strategy evaluation results (200 agents, 20 steps)}{table.caption.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}反事实策略评估}{15}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}结果讨论与启示}{15}{section.7}\protected@file@percent }
+\newlabel{sec:discussion}{{7}{15}{结果讨论与启示}{section.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}主要发现}{15}{subsection.7.1}\protected@file@percent }
+\citation{batson_empathy_1991}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}理论启示}{16}{subsection.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}实践启示}{16}{subsection.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}局限性}{16}{subsection.7.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}结论}{16}{section.8}\protected@file@percent }
+\newlabel{sec:conclusion}{{8}{16}{结论}{section.8}{}}
+\bibstyle{model5-names}
+\bibdata{posim_refs}
+\bibcite{bail_opposing_2018}{{1}{2018}{{Bail et~al.}}{{Bail, Argyle, Brown, Bumpus, Chen, Hunzaker, Lee, Mann, Merhout \& Volfovsky}}}
+\bibcite{banisch_agent_2012}{{2}{2012}{{Banisch et~al.}}{{Banisch, Lima \& Araújo}}}
+\bibcite{barabasi_albert_1999}{{3}{1999}{{Barab{\'a}si \& Albert}}{{}}}
+\bibcite{batson_empathy_1991}{{4}{1991}{{Batson et~al.}}{{Batson, Early \& Salvarani}}}
+\bibcite{berger_what_2012}{{5}{2012}{{Berger \& Milkman}}{{}}}
+\bibcite{bernardo_bc_survey_2024}{{6}{2024}{{Bernardo et~al.}}{{Bernardo, Altafini, Proskurnikov \& Vasca}}}
+\bibcite{bonabeau_agent-based_2002}{{7}{2002}{{Bonabeau}}{{}}}
+\bibcite{box_draper_1987_emprical_modelbuilding}{{8}{1987}{{Box \& Draper}}{{}}}
+\bibcite{bratman_intention_1987}{{9}{1987}{{Bratman}}{{}}}
+\bibcite{buckels2014trolls}{{10}{2014}{{Buckels et~al.}}{{Buckels, Trapnell \& Paulhus}}}
+\bibcite{castellano_statistical_2009}{{11}{2009}{{Castellano et~al.}}{{Castellano, Fortunato \& Loreto}}}
+\bibcite{chen_evolution_2025}{{12}{2025}{{Chen et~al.}}{{Chen, Xin \& Ni}}}
+\bibcite{chuang_simulating_2024}{{13}{2024}{{Chuang et~al.}}{{Chuang, Goyal, Harlalka, Suresh, Hawkins, Yang, Shah, Hu \& Rogers}}}
+\bibcite{cinelli_echo_2021}{{14}{2021{a}}{{Cinelli et~al.}}{{Cinelli, {de Francisci Morales}, Galeazzi, Quattrociocchi \& Starnini}}}
+\bibcite{cinelli2021echo_ipm}{{15}{2021{b}}{{Cinelli et~al.}}{{Cinelli, Morales, Galeazzi, Quattrociocchi \& Starnini}}}
+\bibcite{daley_stochastic_1965}{{16}{1965}{{Daley \& Kendall}}{{}}}
+\bibcite{deffuant_mixing_2000}{{17}{2000}{{Deffuant et~al.}}{{Deffuant, Neau, Amblard \& Weisbuch}}}
+\bibcite{degroot_reaching_1974}{{18}{1974}{{DeGroot}}{{}}}
+\bibcite{ekman_basic_1992}{{19}{1992}{{Ekman}}{{}}}
+\bibcite{ellis_reason_1962}{{20}{1962}{{Ellis}}{{}}}
+\bibcite{fan2023emotional_contagion}{{21}{2023}{{Fan et~al.}}{{Fan, Zhao, Chen \& Xu}}}
+\bibcite{forrester_industrial_1961}{{22}{1961}{{Forrester}}{{}}}
+\bibcite{gao_s3_2023}{{23}{2023}{{Gao et~al.}}{{Gao, Lan, Lu, Mao, Piao, Wang, Jin \& Li}}}
+\bibcite{gao_sd_public_opinion_2019}{{24}{2019}{{Gao et~al.}}{{Gao, Wang, Zheng, Chen \& Xu}}}
+\bibcite{goldstein_structure_2012}{{25}{2012}{{Goldstein et~al.}}{{Goldstein, Watts \& Goel}}}
+\bibcite{gonzalez_emotional_2010}{{26}{2010}{{Gonz{\'a}lez-Bail{\'o}n et~al.}}{{Gonz{\'a}lez-Bail{\'o}n, Banchs \& Kaltenbrunner}}}
+\bibcite{granovetter_threshold_1978}{{27}{1978}{{Granovetter}}{{}}}
+\bibcite{grimm_odd_2010}{{28}{2010}{{Grimm et~al.}}{{Grimm, Berger, DeAngelis, Polhill, Giske \& Railsback}}}
+\bibcite{guo_stochastic_2024}{{29}{2024}{{Guo \& Song}}{{}}}
+\bibcite{hatfield_emotional_1994}{{30}{1994}{{Hatfield et~al.}}{{Hatfield, Cacioppo \& Rapson}}}
+\bibcite{hawkes_spectra_1971}{{31}{1971}{{Hawkes}}{{}}}
+\bibcite{hegselmann_opinion_2002}{{32}{2002}{{Hegselmann \& Krause}}{{}}}
+\bibcite{hu_llm-enhanced_2024}{{33}{2024}{{Hu et~al.}}{{Hu, Sherpa, Zhang, Li, Bai, Wang \& Wang}}}
+\bibcite{jiang_weibo_spnr_2020}{{34}{2020}{{Jiang et~al.}}{{Jiang, Li \& Li}}}
+\bibcite{katz_uses_1973}{{35}{1973}{{Katz et~al.}}{{Katz, Blumler \& Gurevitch}}}
+\bibcite{katz_personal_1955}{{36}{1955}{{Katz \& Lazarsfeld}}{{}}}
+\bibcite{kong_exploring_2020}{{37}{2020}{{Kong et~al.}}{{Kong, Mao, Chen \& Zeng}}}
+\bibcite{kramer_experimental_2014}{{38}{2014}{{Kramer et~al.}}{{Kramer, Guillory \& Hancock}}}
+\bibcite{liu_evolution_2024}{{39}{2024}{{Liu et~al.}}{{Liu, Zhu, Wang \& Chen}}}
+\bibcite{liu_agent-based_2024}{{40}{2024}{{Liu \& Wen}}{{}}}
+\bibcite{liu_lmagent_2026}{{41}{2026}{{Liu et~al.}}{{Liu, Liu, Gu, Rui, He \& Zhang}}}
+\bibcite{macal_tutorial_2010}{{42}{2010}{{Macal \& North}}{{}}}
+\bibcite{mcculloch_calibrating_2022}{{43}{2022}{{McCulloch et~al.}}{{McCulloch, Ge, Ward, Heppenstall, Polhill \& Malleson}}}
+\bibcite{mou_unveiling_2024}{{44}{2024}{{Mou et~al.}}{{Mou, Wei \& Huang}}}
+\bibcite{myint2024crisis_mtl_intent}{{45}{2024}{{Myint et~al.}}{{Myint, Lo \& Zhang}}}
+\bibcite{park_generative_2023}{{46}{2023}{{Park et~al.}}{{Park, O'Brien, Cai et~al.}}}
+\bibcite{rao_bdi_1995}{{47}{1995}{{Rao \& Georgeff}}{{}}}
+\bibcite{rizoiu_expecting_2017}{{48}{2017}{{Rizoiu et~al.}}{{Rizoiu, Xie, Sanner, Cebrian, Yu \& Hentenryck}}}
+\bibcite{sargent_verification_2013}{{49}{2013}{{Sargent}}{{}}}
+\bibcite{sterman_business_2000}{{50}{2000}{{Sterman}}{{}}}
+\bibcite{wang_survey_2024}{{51}{2024}{{Wang et~al.}}{{Wang, Ma, Feng, Zhang, Yang, Zhang, Chen, Tang, Chen, Lin, Zhao, Wei \& Wen}}}
+\bibcite{watts_cascades_2002}{{52}{2002}{{Watts}}{{}}}
+\bibcite{watts_strogatz_1998}{{53}{1998}{{Watts \& Strogatz}}{{}}}
+\bibcite{wei_chain_2022}{{54}{2022}{{Wei et~al.}}{{Wei, Wang, Schuurmans, Bosma, Ichter, Xia, Chi, Le \& Zhou}}}
+\bibcite{wu2023algorithmic_exposure}{{55}{2023}{{Wu et~al.}}{{Wu, Zhang, Zhao \& Liu}}}
+\bibcite{wu_public_2023}{{56}{2023}{{Wu \& Liu}}{{}}}
+\bibcite{yang_oasis_2025}{{57}{2025}{{Yang et~al.}}{{Yang, Zhang, Zheng et~al.}}}
+\bibcite{yao_social_2025}{{58}{2025}{{Yao et~al.}}{{Yao, Zhang, Ou, Zuo, Yang \& Dong}}}
+\bibcite{zhang_spark_2025}{{59}{2025{a}}{{Zhang et~al.}}{{Zhang, Yang, Niu, Fu, Dai \& Huang}}}
+\bibcite{zhang_opinion-aware_2023}{{60}{2023}{{Zhang et~al.}}{{Zhang, Yao, Tang, Zhu \& Zhang}}}
+\bibcite{zhang_llm-aidsim_2025}{{61}{2025{b}}{{Zhang et~al.}}{{Zhang, Hu, Li, Bai \& Nand}}}
+\bibcite{zhang_trendsim_2025}{{62}{2025{c}}{{Zhang et~al.}}{{Zhang, Lian, Ma et~al.}}}
+\bibcite{zhao_seismic_2015}{{63}{2015}{{Zhao et~al.}}{{Zhao, Erdogdu, He, Rajaraman \& Leskovec}}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}核心算法伪代码}{19}{appendix.A}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces POSIM仿真主循环}}{19}{algorithm.1}\protected@file@percent }
+\newlabel{alg:main}{{1}{19}{POSIM仿真主循环}{algorithm.1}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces EBDI认知决策管线}}{19}{algorithm.2}\protected@file@percent }
+\newlabel{alg:ebdi}{{2}{19}{EBDI认知决策管线}{algorithm.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}核心提示词模板}{19}{appendix.B}\protected@file@percent }
+\newlabel{app:prompts}{{B}{19}{核心提示词模板}{appendix.B}{}}
+\csxdef{lastpage}{21}
+\@writefile{toc}{\contentsline {section}{\numberline {C}参数配置}{21}{appendix.C}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Hawkes point process parameters (unified across three events).}}{21}{table.9}\protected@file@percent }
+\newlabel{tab:hawkes_params}{{9}{21}{Hawkes point process parameters (unified across three events)}{table.9}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Recommendation system parameters.}}{21}{table.10}\protected@file@percent }
+\newlabel{tab:rec_params}{{10}{21}{Recommendation system parameters}{table.10}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}数据采集与预处理}{21}{appendix.D}\protected@file@percent }
+\newlabel{app:data}{{D}{21}{数据采集与预处理}{appendix.D}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {E}评估模型配置}{21}{appendix.E}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {F}行为热度和分布结果}{21}{appendix.F}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces 三个事件的行为热度与分布校准结果。每行对应一个事件（(a)~天价耳环、(b)~武大图书馆、(c)~西贝预制菜），左侧为模拟与真实数据的活跃度时序对比，右侧为行为类型的比例分布对比。}}{22}{figure.caption.16}\protected@file@percent }
+\newlabel{fig:three_event_calibration}{{7}{22}{三个事件的行为热度与分布校准结果。每行对应一个事件（(a)~天价耳环、(b)~武大图书馆、(c)~西贝预制菜），左侧为模拟与真实数据的活跃度时序对比，右侧为行为类型的比例分布对比。}{figure.caption.16}{}}
+\gdef \@abspage@last{22}

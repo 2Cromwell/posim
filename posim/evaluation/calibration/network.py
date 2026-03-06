@@ -55,9 +55,30 @@ class NetworkCalibrationEvaluator(BaseEvaluator):
         
         results = {}
         
+        # 确定初始帖子数量（用于过滤初始化数据的交互）
+        initial_posts_count = kwargs.get('initial_posts_count', 0)
+        if not initial_posts_count:
+            # 尝试从sim_results_dir路径推断initial_posts.json位置
+            sim_dir = kwargs.get('sim_results_dir', '')
+            if sim_dir:
+                init_path = Path(sim_dir).parent.parent.parent / 'data' / 'initial_posts.json'
+                if init_path.exists():
+                    try:
+                        import json as _json
+                        with open(init_path, 'r', encoding='utf-8') as _f:
+                            initial_posts_count = len(_json.load(_f))
+                        logger.info(f"从 {init_path} 获取初始帖子数量: {initial_posts_count}")
+                    except Exception as e:
+                        logger.warning(f"读取initial_posts.json失败: {e}")
+        
+        # 计算内容来源链（用于网络和级联的过滤）
+        valid_targets = self._compute_provenance(micro_results, initial_posts_count)
+        
         # 构建模拟转发网络
         print("    构建模拟转发网络...")
-        sim_graph = self._build_repost_network(micro_results, source='sim')
+        sim_graph = self._build_repost_network(micro_results, source='sim',
+                                                initial_posts_count=initial_posts_count,
+                                                valid_targets=valid_targets)
         sim_metrics = self._compute_network_metrics(sim_graph)
         results['sim_network'] = sim_metrics
         print(f"      节点数: {sim_metrics.get('node_count', 0)}, 边数: {sim_metrics.get('edge_count', 0)}")
@@ -98,7 +119,9 @@ class NetworkCalibrationEvaluator(BaseEvaluator):
         print("    分析信息级联结构...")
         results['cascade_structure'] = self._analyze_cascade_structure(
             micro_results, real_data.get('actions', []) if real_data else [],
-            base_data_path, has_real)
+            base_data_path, has_real,
+            initial_posts_count=initial_posts_count,
+            valid_targets=valid_targets)
 
         self._plot_network(results, has_real)
         if has_real:
@@ -108,40 +131,148 @@ class NetworkCalibrationEvaluator(BaseEvaluator):
         self._print_summary(results)
         return results
     
-    def _build_repost_network(self, micro_results, source='sim'):
-        """从模拟结果构建转发网络"""
+    def _compute_provenance(self, micro_results, initial_posts_count):
+        """计算内容来源链，返回有效目标帖子ID集合
+        
+        通过重建 post_id 分配追踪每个模拟帖子的内容来源：
+        - 模拟原创帖(short_post/long_post) → 'original'
+        - 转发初始帖子 → 'initial_derived'（含传递链）
+        - 转发模拟原创内容 → 'sim_derived'
+        
+        Returns: set of valid target post_ids (original + sim_derived)
+        """
+        if not initial_posts_count:
+            return set()
+        
+        N = initial_posts_count
+        POST_CREATING = {'short_post', 'long_post', 'repost', 'repost_comment'}
+        
+        post_actions = []
+        for i, a in enumerate(micro_results):
+            if a.get('action_type', '') in POST_CREATING:
+                post_actions.append((i, a))
+        post_actions.sort(key=lambda x: (x[1].get('time', ''), x[0]))
+        
+        provenance = {}
+        next_id = N + 1
+        
+        for idx, action in post_actions:
+            pid = f"post_{next_id}"
+            at = action.get('action_type', '')
+            
+            if at in ('short_post', 'long_post'):
+                provenance[pid] = 'original'
+            elif at in ('repost', 'repost_comment'):
+                target = action.get('target_post_id', '')
+                if target and target.startswith('post_'):
+                    try:
+                        tnum = int(target.split('_')[1])
+                    except (ValueError, IndexError):
+                        provenance[pid] = 'unknown'
+                        next_id += 1
+                        continue
+                    if tnum <= N:
+                        provenance[pid] = 'initial_derived'
+                    elif target in provenance:
+                        provenance[pid] = ('initial_derived'
+                                           if provenance[target] == 'initial_derived'
+                                           else 'sim_derived')
+                    else:
+                        provenance[pid] = 'unknown'
+                else:
+                    provenance[pid] = 'unknown'
+            
+            next_id += 1
+        
+        valid = {pid for pid, prov in provenance.items()
+                 if prov in ('original', 'sim_derived')}
+        
+        from collections import Counter
+        prov_counts = Counter(provenance.values())
+        logger.info(f"内容来源链: original={prov_counts.get('original',0)}, "
+                    f"sim_derived={prov_counts.get('sim_derived',0)}, "
+                    f"initial_derived={prov_counts.get('initial_derived',0)}, "
+                    f"unknown={prov_counts.get('unknown',0)}, "
+                    f"有效目标帖数={len(valid)}")
+        return valid
+    
+    def _build_repost_network(self, micro_results, source='sim', initial_posts_count=0,
+                              valid_targets=None):
+        """从模拟结果构建转发网络（基于内容来源链追踪）
+        
+        当 initial_posts_count > 0 时，仅保留指向 valid_targets 中帖子的交互，
+        完全排除初始化数据及其衍生内容的交互。
+        """
         try:
             import networkx as nx
         except ImportError:
             logger.warning("networkx未安装，使用简化网络分析")
             return self._build_simple_network(micro_results, source)
         
+        # 收集模拟智能体的 user_id 和 username 集合
+        sim_agent_ids = set()
+        name_to_id = {}
+        for a in micro_results:
+            uid = a.get('user_id', '')
+            uname = a.get('username', '')
+            if uid:
+                sim_agent_ids.add(uid)
+            if uid and uname:
+                name_to_id[uname] = uid
+        
+        # 使用传入的 valid_targets 或空集合
+        if valid_targets is None:
+            valid_targets = set()
+        
+        # ---- 构建网络 ----
         G = nx.DiGraph()
+        filtered_initial = 0
+        filtered_derived = 0
+        kept_edges = 0
         
         for a in micro_results:
             action_type = a.get('action_type', '')
             if action_type in ['repost', 'repost_comment', 'short_comment', 'long_comment']:
                 src = a.get('user_id', '')
-                target_author = a.get('target_author', '')
-                target_uid = a.get('target_author_id', '')
-                
                 if not src:
                     continue
                 
-                # 确定目标节点
-                dst = target_uid or target_author
-                if not dst:
-                    dst = a.get('target_post_id', '')
+                target_pid = a.get('target_post_id', '')
+                
+                if initial_posts_count > 0 and target_pid:
+                    if target_pid.startswith('post_'):
+                        try:
+                            num = int(target_pid.split('_')[1])
+                        except (ValueError, IndexError):
+                            continue
+                        if num <= initial_posts_count:
+                            filtered_initial += 1
+                            continue
+                    # 检查是否为初始化内容的衍生帖子
+                    if target_pid not in valid_targets:
+                        filtered_derived += 1
+                        continue
+                
+                # 确定目标节点（使用target_author的user_id）
+                target_author = a.get('target_author', '')
+                target_uid = a.get('target_author_id', '')
+                dst = target_uid or name_to_id.get(target_author, target_author)
                 
                 if src and dst and src != dst:
                     G.add_edge(src, dst)
+                    kept_edges += 1
         
-        # 添加发帖节点
-        for a in micro_results:
-            uid = a.get('user_id', '')
-            if uid:
-                if not G.has_node(uid):
-                    G.add_node(uid)
+        # 添加所有模拟智能体节点
+        for uid in sim_agent_ids:
+            if not G.has_node(uid):
+                G.add_node(uid)
+        
+        if initial_posts_count > 0:
+            logger.info(f"网络构建(来源链过滤): "
+                        f"过滤 {filtered_initial} 条→初始帖, "
+                        f"{filtered_derived} 条→初始衍生帖, "
+                        f"保留 {G.number_of_edges()} 条边 "
+                        f"(有效目标帖数: {len(valid_targets)})")
         
         return G
     
@@ -457,47 +588,78 @@ class NetworkCalibrationEvaluator(BaseEvaluator):
         return metrics
     
     def _compute_network_similarity(self, sim_metrics, real_metrics) -> Dict:
-        """计算网络结构相似度"""
+        """计算网络结构相似度（基于结构性指标，避免量依赖）"""
         similarity = {}
         
-        # 密度相似度
+        # ---- 结构性指标（不受交互量影响） ----
+        
+        # 1. 聚类系数相似度
+        sim_cc = sim_metrics.get('clustering_coefficient', 0)
+        real_cc = real_metrics.get('clustering_coefficient', 0)
+        similarity['clustering_similarity'] = float(max(0, 1 - abs(sim_cc - real_cc)))
+        
+        # 2. 度分布不等性相似度（基尼系数）
+        sim_gini = sim_metrics.get('degree_stats', {}).get('degree_gini', 0)
+        real_gini = real_metrics.get('degree_stats', {}).get('degree_gini', 0)
+        similarity['degree_gini_similarity'] = float(max(0, 1 - abs(sim_gini - real_gini)))
+        
+        # 3. 最大连通分量比例相似度
+        sim_lcc = sim_metrics.get('largest_component_ratio', 0)
+        real_lcc = real_metrics.get('largest_component_ratio', 0)
+        similarity['lcc_similarity'] = float(max(0, 1 - abs(sim_lcc - real_lcc)))
+        
+        # 4. 幂律指数相似度（尺度不变特征）
+        sim_dd = sim_metrics.get('degree_distribution', {})
+        real_dd = real_metrics.get('degree_distribution', {})
+        sim_pl = self._fit_degree_power_law(sim_dd, sim_metrics.get('node_count', 0))
+        real_pl = self._fit_degree_power_law(real_dd, real_metrics.get('node_count', 0))
+        if sim_pl is not None and real_pl is not None:
+            max_pl = max(abs(sim_pl), abs(real_pl), 1e-10)
+            similarity['power_law_exponent_similarity'] = float(max(0, 1 - abs(sim_pl - real_pl) / max_pl))
+            similarity['sim_power_law_exp'] = float(sim_pl)
+            similarity['real_power_law_exp'] = float(real_pl)
+        
+        # ---- 保留量指标供参考（不计入综合分） ----
         sim_density = sim_metrics.get('density', 0)
         real_density = real_metrics.get('density', 0)
         similarity['density_diff'] = float(abs(sim_density - real_density))
         similarity['density_similarity'] = float(max(0, 1 - abs(sim_density - real_density) * 100))
         
-        # 平均度相似度
         sim_avg_deg = sim_metrics.get('degree_stats', {}).get('avg_degree', 0)
         real_avg_deg = real_metrics.get('degree_stats', {}).get('avg_degree', 0)
         max_deg = max(sim_avg_deg, real_avg_deg, 1)
         similarity['avg_degree_similarity'] = float(1 - abs(sim_avg_deg - real_avg_deg) / max_deg)
         
-        # 聚类系数相似度
-        sim_cc = sim_metrics.get('clustering_coefficient', 0)
-        real_cc = real_metrics.get('clustering_coefficient', 0)
-        similarity['clustering_similarity'] = float(max(0, 1 - abs(sim_cc - real_cc)))
-        
-        # 度分布相似度（基尼系数对比）
-        sim_gini = sim_metrics.get('degree_stats', {}).get('degree_gini', 0)
-        real_gini = real_metrics.get('degree_stats', {}).get('degree_gini', 0)
-        similarity['degree_gini_similarity'] = float(max(0, 1 - abs(sim_gini - real_gini)))
-        
-        # 最大连通分量比例相似度
-        sim_lcc = sim_metrics.get('largest_component_ratio', 0)
-        real_lcc = real_metrics.get('largest_component_ratio', 0)
-        similarity['lcc_similarity'] = float(max(0, 1 - abs(sim_lcc - real_lcc)))
-        
-        # 综合相似度
-        components = [
-            similarity.get('density_similarity', 0),
-            similarity.get('avg_degree_similarity', 0),
+        # ---- 综合相似度（仅基于结构性指标） ----
+        structural_components = [
             similarity.get('clustering_similarity', 0),
             similarity.get('degree_gini_similarity', 0),
-            similarity.get('lcc_similarity', 0)
+            similarity.get('lcc_similarity', 0),
         ]
-        similarity['overall_network_similarity'] = float(np.mean([c for c in components if c > 0]))
+        if 'power_law_exponent_similarity' in similarity:
+            structural_components.append(similarity['power_law_exponent_similarity'])
+        
+        valid = [c for c in structural_components if c > 0]
+        similarity['overall_network_similarity'] = float(np.mean(valid)) if valid else 0.0
         
         return similarity
+    
+    def _fit_degree_power_law(self, degree_dist: Dict, node_count: int) -> Optional[float]:
+        """从度分布拟合幂律指数"""
+        from ..utils import fit_power_law_exponent
+        if not degree_dist or node_count < 10:
+            return None
+        degrees = []
+        for k, v in degree_dist.items():
+            try:
+                deg = int(k)
+                if deg > 0:
+                    degrees.extend([deg] * int(v))
+            except (ValueError, TypeError):
+                continue
+        if len(degrees) < 10:
+            return None
+        return fit_power_law_exponent(degrees)
     
     def _plot_network(self, results, has_real):
         """绘制网络指标对比图"""
@@ -594,16 +756,15 @@ class NetworkCalibrationEvaluator(BaseEvaluator):
         ax = axes[1, 1]
         net_sim = results.get('network_similarity', {})
         if net_sim:
-            sim_labels = ['Density', 'Avg Degree', 'Clustering', 'Degree Gini', 'LCC', 'Overall']
+            sim_labels = ['Clustering', 'Degree Gini', 'LCC', 'Power Law', 'Overall']
             sim_values = [
-                net_sim.get('density_similarity', 0),
-                net_sim.get('avg_degree_similarity', 0),
                 net_sim.get('clustering_similarity', 0),
                 net_sim.get('degree_gini_similarity', 0),
                 net_sim.get('lcc_similarity', 0),
+                net_sim.get('power_law_exponent_similarity', 0),
                 net_sim.get('overall_network_similarity', 0)
             ]
-            colors = ['#1f77b4'] * 5 + ['#d62728']
+            colors = ['#1f77b4'] * 4 + ['#d62728']
             bars = ax.barh(sim_labels, sim_values, color=colors, alpha=0.8, edgecolor='black')
             for bar, val in zip(bars, sim_values):
                 ax.text(bar.get_width() + 0.02, bar.get_y() + bar.get_height()/2,
@@ -696,12 +857,20 @@ class NetworkCalibrationEvaluator(BaseEvaluator):
             print(f"      关键节点影响力综合相似度: {metrics['key_node_overall_similarity']:.4f}")
         return metrics
 
-    def _analyze_cascade_structure(self, micro_results, real_actions, base_data_path, has_real):
-        """信息级联深度/宽度/规模分析"""
+    def _analyze_cascade_structure(self, micro_results, real_actions, base_data_path, has_real,
+                                    initial_posts_count=0, valid_targets=None):
+        """信息级联深度/宽度/规模分析
+        
+        当提供 valid_targets 时，仅统计指向有效目标帖子的级联，
+        排除初始化数据及其衍生内容的级联。
+        """
         metrics = {}
 
-        def _build_cascades(actions, source='sim'):
-            """从动作列表构建级联树"""
+        def _build_cascades(actions, source='sim', filter_targets=None, N=0):
+            """从动作列表构建级联树
+            filter_targets: 仅保留这些 target_post_id 的级联（sim模式下使用）
+            N: 初始帖子数量阈值
+            """
             post_authors = {}
             cascades = defaultdict(list)
             for a in actions:
@@ -713,6 +882,17 @@ class NetworkCalibrationEvaluator(BaseEvaluator):
                 elif atype in ('repost', 'repost_comment', 'comment', 'short_comment', 'long_comment'):
                     target_pid = a.get('target_post_id', pid)
                     if target_pid:
+                        # 来源链过滤：排除初始帖子和初始衍生帖子
+                        if source == 'sim' and filter_targets is not None and N > 0:
+                            if target_pid.startswith('post_'):
+                                try:
+                                    num = int(target_pid.split('_')[1])
+                                except (ValueError, IndexError):
+                                    continue
+                                if num <= N:
+                                    continue  # 初始帖子
+                            if target_pid not in filter_targets:
+                                continue  # 初始衍生帖子
                         cascades[target_pid].append(uid)
             depths = []
             widths = []
@@ -726,7 +906,10 @@ class NetworkCalibrationEvaluator(BaseEvaluator):
                 scales.append(scale)
             return depths, widths, scales
 
-        sim_depths, sim_widths, sim_scales = _build_cascades(micro_results, 'sim')
+        sim_depths, sim_widths, sim_scales = _build_cascades(
+            micro_results, 'sim',
+            filter_targets=valid_targets,
+            N=initial_posts_count)
         metrics['sim_cascade_count'] = len(sim_scales)
         if sim_scales:
             metrics['sim_avg_cascade_scale'] = float(np.mean(sim_scales))
@@ -756,6 +939,16 @@ class NetworkCalibrationEvaluator(BaseEvaluator):
                 metrics['cascade_scale_jsd'] = float(jsd)
                 metrics['cascade_scale_similarity'] = float(1 - jsd)
                 print(f"      级联规模分布相似度: {1 - jsd:.4f}")
+                
+                # 级联幂律指数相似度（尺度不变结构特征）
+                sim_pl = metrics.get('sim_cascade_power_law_exp')
+                real_pl = metrics.get('real_cascade_power_law_exp')
+                if sim_pl is not None and real_pl is not None:
+                    max_pl = max(abs(sim_pl), abs(real_pl), 1e-10)
+                    pl_sim = float(max(0, 1 - abs(sim_pl - real_pl) / max_pl))
+                    metrics['cascade_power_law_similarity'] = pl_sim
+                    print(f"      级联幂律指数相似度: {pl_sim:.4f} "
+                          f"(sim={sim_pl:.3f}, real={real_pl:.3f})")
         elif has_real and real_actions:
             real_depths, real_widths, real_scales = _build_cascades(real_actions, 'real')
             metrics['real_cascade_count'] = len(real_scales)

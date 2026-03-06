@@ -17,7 +17,7 @@ warnings.filterwarnings('ignore')
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
-OUT_DIR = os.path.join(SCRIPT_DIR, 'figures')
+OUT_DIR = os.path.join(SCRIPT_DIR, 'els-cas-templates_IPM', 'figures')
 
 SIM_TYPE_MAP = {
     'short_post': 'original', 'long_post': 'original',
@@ -26,8 +26,10 @@ SIM_TYPE_MAP = {
 }
 REAL_TYPE_MAP = {'original': 'original', 'repost': 'repost', 'comment': 'comment'}
 
-C_SIM = '#5B9BD5'
-C_REAL = '#ED7D31'
+C_SIM = '#3B4892'
+C_REAL = '#F00002'
+C_SIM_LIGHT = '#D8DBEB'
+C_REAL_LIGHT = '#F8CDCD'
 
 EVENTS = [
     {
@@ -127,26 +129,24 @@ def main():
     plt.rcParams.update({
         'font.family': 'serif',
         'font.serif': ['Times New Roman', 'DejaVu Serif'],
-        'font.size': 9,
-        'axes.labelsize': 10,
-        'axes.titlesize': 11,
-        'xtick.labelsize': 7.5,
-        'ytick.labelsize': 8,
+        'font.size': 12,
+        'axes.labelsize': 14,
+        'axes.titlesize': 15,
+        'xtick.labelsize': 11,
+        'ytick.labelsize': 11,
         'figure.dpi': 300,
         'savefig.dpi': 300,
         'axes.spines.top': False,
         'axes.spines.right': False,
     })
 
-    fig, axes = plt.subplots(3, 2, figsize=(10, 8.5),
+    fig, axes = plt.subplots(3, 2, figsize=(10, 7.5),
                               gridspec_kw={'width_ratios': [2.2, 1],
-                                           'hspace': 0.38, 'wspace': 0.18,
+                                           'hspace': 0.18, 'wspace': 0.22,
                                            'left': 0.08, 'right': 0.97,
                                            'top': 0.97, 'bottom': 0.06})
 
     type_order = ['original', 'repost', 'comment']
-    bar_colors_sim = ['#5B9BD5', '#5B9BD5', '#5B9BD5']
-    bar_colors_real = ['#ED7D31', '#ED7D31', '#ED7D31']
 
     for row_idx, evt in enumerate(EVENTS):
         print(f"Processing {evt['name']}...")
@@ -159,27 +159,28 @@ def main():
         sim_smooth = smooth_curve(sim_hot, window=5)
         real_smooth = smooth_curve(real_hot, window=5)
 
-        ax_hot.fill_between(sim_times, sim_smooth, alpha=0.20, color=C_SIM, linewidth=0)
-        ax_hot.plot(sim_times, sim_smooth, color=C_SIM, linewidth=1.6,
+        # Use round-based x-axis instead of time
+        sim_rounds = np.arange(len(sim_smooth))
+        real_rounds = np.arange(len(real_smooth))
+
+        ax_hot.fill_between(sim_rounds, sim_smooth, alpha=0.25, color=C_SIM_LIGHT, linewidth=0)
+        ax_hot.plot(sim_rounds, sim_smooth, color=C_SIM, linewidth=1.6,
                     label='Simulation', solid_capstyle='round')
-        ax_hot.plot(real_times[:len(real_smooth)], real_smooth,
+        ax_hot.plot(real_rounds[:len(real_smooth)], real_smooth,
                     color=C_REAL, linewidth=1.6, linestyle='--',
                     label='Real Data', solid_capstyle='round')
 
-        ax_hot.set_ylabel('Activity Count', fontsize=9, fontweight='bold')
+        ax_hot.set_ylabel('Activity Count', fontsize=13, fontweight='bold')
         if row_idx == 2:
-            ax_hot.set_xlabel('Time', fontsize=9, fontweight='bold')
+            ax_hot.set_xlabel('Simulation Round', fontsize=13, fontweight='bold')
 
-        ax_hot.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d %H:%M'))
-        ax_hot.xaxis.set_major_locator(mdates.AutoDateLocator(maxticks=5))
-        plt.setp(ax_hot.xaxis.get_majorticklabels(), rotation=25, ha='right', fontsize=6.5)
         ax_hot.grid(axis='y', alpha=0.15, linestyle='-', linewidth=0.3)
 
         ax_hot.text(0.02, 0.93, f'{evt["tag"]} {evt["name"]}',
-                    transform=ax_hot.transAxes, fontsize=10, fontweight='bold', va='top')
+                    transform=ax_hot.transAxes, fontsize=13, fontweight='bold', va='top')
 
         if row_idx == 0:
-            ax_hot.legend(loc='upper right', fontsize=7.5, framealpha=0.9,
+            ax_hot.legend(loc='upper right', fontsize=10, framealpha=0.9,
                           edgecolor='#ddd', handlelength=1.5)
 
         ax_beh = axes[row_idx, 1]
@@ -201,16 +202,16 @@ def main():
             for bar in bars:
                 h = bar.get_height()
                 ax_beh.text(bar.get_x() + bar.get_width() / 2, h + 0.008,
-                            f'{h*100:.1f}%', ha='center', va='bottom', fontsize=6.5)
+                            f'{h*100:.1f}%', ha='center', va='bottom', fontsize=9)
 
         ax_beh.set_xticks(x)
-        ax_beh.set_xticklabels(type_order, fontsize=8)
-        ax_beh.set_ylabel('Proportion', fontsize=9, fontweight='bold')
+        ax_beh.set_xticklabels(type_order, fontsize=11)
+        ax_beh.set_ylabel('Proportion', fontsize=13, fontweight='bold')
         ax_beh.set_ylim(0, max(max(sim_pcts), max(real_pcts)) * 1.22)
         ax_beh.grid(axis='y', alpha=0.15, linestyle='-', linewidth=0.3)
 
         if row_idx == 0:
-            ax_beh.legend(loc='upper left', fontsize=7, framealpha=0.9,
+            ax_beh.legend(loc='upper left', fontsize=10, framealpha=0.9,
                           edgecolor='#ddd', handlelength=1.2)
 
     os.makedirs(OUT_DIR, exist_ok=True)

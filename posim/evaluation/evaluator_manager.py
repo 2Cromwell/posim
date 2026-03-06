@@ -275,7 +275,8 @@ class EvaluationManager:
                 evaluator = NetworkCalibrationEvaluator(self.calibration_dir)
                 self.results['network_calibration'] = evaluator.evaluate(
                     self.sim_data, self.real_data,
-                    base_data_path=self.base_data_path)
+                    base_data_path=self.base_data_path,
+                    sim_results_dir=str(self.sim_results_dir))
             except Exception as e:
                 logger.error(f"网络校准失败: {e}", exc_info=True)
                 print(f"    ❌ 网络校准失败: {e}")

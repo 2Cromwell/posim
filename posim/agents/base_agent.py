@@ -12,7 +12,7 @@ from .ebdi.desire.desire_system import DesireSystem
 from .ebdi.intention.intention_system import IntentionSystem, IntentionResult
 from .ebdi.memory.stream_memory import StreamMemory
 from .ebdi.memory.memory_retrieval import MemoryRetrieval
-from posim.prompts.ablation_prompts import get_no_ebdi_prompt, get_cot_prompt
+from posim.prompts.ablation_prompts import get_no_ebdi_prompt, get_cot_prompt, get_wo_intention_prompt
 from posim.utils.formatters import format_external_events, format_exposed_posts, format_hot_topics
 
 
@@ -132,6 +132,13 @@ class BaseAgent(ABC):
         metadata['target'] = target_content[:100] if target_content else ''
         self.memory.add(content=action_desc, memory_type='action', importance=importance,
                        metadata=metadata, timestamp=current_time)
+    
+    def _format_memories_for_ablation(self, memories) -> str:
+        """格式化记忆列表为prompt文本（用于消融实验）"""
+        if not memories:
+            return ""
+        lines = [f"- {m.content}" for m in memories]
+        return "\n### 我的近期行为记录\n" + "\n".join(lines) + "\n"
                        
     async def perceive_and_act_no_ebdi(self, exposed_posts: List[Dict], external_events: List[Dict],
                                        current_time: str, hot_topics: str = "") -> List[IntentionResult]:
@@ -139,6 +146,8 @@ class BaseAgent(ABC):
         w/o EBDI消融: 不使用结构化认知框架
         跳过信念更新和欲望生成，直接基于身份+上下文生成行为
         不维护持久化信念状态（无情绪衰减、无观点累积）
+        不接收热搜和外部事件（这些需要belief系统处理）
+        包含记忆系统：检索近期行为记忆作为上下文
         """
         if self.is_banned:
             return []
@@ -146,21 +155,22 @@ class BaseAgent(ABC):
         # 获取身份文本（仅使用初始身份信息，不使用动态信念状态）
         identity_text = self.belief_system.identity.to_prompt_text()
         
-        # 格式化上下文
+        # 检索近期行为记忆
+        relevant_memories = self.memory_retrieval.retrieve_by_recency_and_importance(self.memory, top_k=5)
+        memories_text = self._format_memories_for_ablation(relevant_memories)
+        
+        # 格式化上下文（不包含热搜和外部事件，这些需要认知框架处理）
         exposed_text = format_exposed_posts(exposed_posts, current_time, max_posts=10,
                                            include_stats=True, include_comments=True)
-        events_text = format_external_events(external_events, current_time)
-        hot_topics_text = format_hot_topics(hot_topics)
         
-        # 获取消融prompt并填充
+        # 获取消融prompt并填充（无hot_topics/external_events）
         prompt_template = get_no_ebdi_prompt(self.agent_type)
         prompt = prompt_template.format(
             event_background=self.event_background,
             current_time=current_time,
             identity_text=identity_text,
             exposed_posts=exposed_text if exposed_text else "当前无可互动博文，可发布原创博文",
-            hot_topics=hot_topics_text,
-            external_events=events_text
+            recent_memories=memories_text
         )
         
         # 单次LLM调用生成行为
@@ -182,12 +192,17 @@ class BaseAgent(ABC):
         w/ CoT消融: 单次LLM调用，合并信念-欲望-意图的链式推理
         不使用独立的Belief/Desire模块，但有CoT引导推理
         不维护持久化信念状态
+        包含记忆系统：检索近期行为记忆作为上下文
         """
         if self.is_banned:
             return []
         
         # 获取身份文本（仅使用初始身份信息）
         identity_text = self.belief_system.identity.to_prompt_text()
+        
+        # 检索近期行为记忆
+        relevant_memories = self.memory_retrieval.retrieve_by_recency_and_importance(self.memory, top_k=5)
+        memories_text = self._format_memories_for_ablation(relevant_memories)
         
         # 格式化上下文
         exposed_text = format_exposed_posts(exposed_posts, current_time, max_posts=10,
@@ -203,7 +218,8 @@ class BaseAgent(ABC):
             identity_text=identity_text,
             exposed_posts=exposed_text if exposed_text else "当前无可互动博文，可发布原创博文",
             hot_topics=hot_topics_text,
-            external_events=events_text
+            external_events=events_text,
+            recent_memories=memories_text
         )
         
         # 单次LLM调用（含CoT推理）
@@ -217,6 +233,56 @@ class BaseAgent(ABC):
             self._record_action_to_memory(intention, current_time)
         
         self.last_action_time = current_time
+        return intentions
+    
+    async def generate_actions_wo_intention(self, belief_text: str, desires: List[Dict],
+                                            exposed_posts: List[Dict], current_time: str,
+                                            external_events: List[Dict] = None,
+                                            hot_topics: str = "") -> List[IntentionResult]:
+        """
+        w/o Intention消融: 有信念更新和欲望生成，但无结构化意图规划
+        跳过IntentionSystem的三级COT推理链，直接从信念+欲望生成行为
+        缺少deliberative action planning → 行为缺少策略深度和表达策略精细度
+        """
+        if self.is_banned:
+            return []
+        
+        # 格式化欲望文本
+        desires_text = ""
+        if desires:
+            desire_lines = []
+            for d in desires:
+                name = d.get('name', d.get('desire_type', '未知'))
+                weight = d.get('weight', d.get('intensity', 0.5))
+                desire_lines.append(f"- {name}（强度: {weight:.1f}）")
+            desires_text = "\n".join(desire_lines)
+        else:
+            desires_text = "无明确需求"
+        
+        # 格式化上下文
+        exposed_text = format_exposed_posts(exposed_posts, current_time, max_posts=10,
+                                           include_stats=True, include_comments=True)
+        events_text = format_external_events(external_events or [], current_time)
+        hot_topics_text = format_hot_topics(hot_topics)
+        
+        # 获取wo_intention prompt并填充
+        prompt_template = get_wo_intention_prompt(self.agent_type)
+        prompt = prompt_template.format(
+            event_background=self.event_background,
+            current_time=current_time,
+            belief_text=belief_text,
+            desires_text=desires_text,
+            exposed_posts=exposed_text if exposed_text else "当前无可互动博文，可发布原创博文",
+            hot_topics=hot_topics_text,
+            external_events=events_text
+        )
+        
+        # 单次LLM调用（无三级COT推理）
+        response = await self.api_pool.async_text_query(prompt, "", purpose='action')
+        
+        # 复用IntentionSystem的解析逻辑
+        intentions = self.intention_system._parse_intentions(response, exposed_posts)
+        
         return intentions
     
     def random_decision(self, exposed_posts: List[Dict], external_events: List[Dict],
@@ -328,6 +394,9 @@ class BaseAgent(ABC):
                     mentions=[author] if author else [],
                     emotion=emotion, stance=stance
                 ))
+            elif needs_target and not exposed_posts:
+                # 无可交互内容时跳过（缺乏认知驱动的自发内容创作能力）
+                continue
             else:
                 # 无目标帖子或本身是发帖类行为 -> 发帖
                 # if needs_target:

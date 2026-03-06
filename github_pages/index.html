@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POSIM — Public Opinion Simulator Based on Metacognitive Agents</title>
+  <meta name="description" content="POSIM: A General-Purpose Social Media Public Opinion Simulation Framework Based on Metacognitive Agents. Embedding LLMs into layered EBDI cognitive architecture for high-fidelity opinion simulation.">
+  <meta name="keywords" content="social media simulation, public opinion, LLM agents, EBDI, Hawkes process, agent-based modeling">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Merriweather:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+
+  <!-- KaTeX for math -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" href="posim_logo.png">
+</head>
+<body>
+
+<!-- ======================== Navbar ======================== -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="#" class="navbar-brand">
+      <img src="posim_logo.png" alt="POSIM">
+    </a>
+    <ul class="navbar-links" id="navLinks">
+      <li><a href="#overview" data-en="Overview" data-cn="概览">Overview</a></li>
+      <li><a href="#contributions" data-en="Contributions" data-cn="贡献">Contributions</a></li>
+      <li><a href="#framework" data-en="Framework" data-cn="框架">Framework</a></li>
+      <li><a href="#ebdi" data-en="EBDI Agent" data-cn="EBDI智能体">EBDI Agent</a></li>
+      <li><a href="#results" data-en="Results" data-cn="实验结果">Results</a></li>
+      <li><a href="#case-study" data-en="Case Study" data-cn="案例研究">Case Study</a></li>
+      <li><a href="#citation" data-en="Citation" data-cn="引用">Citation</a></li>
+      <li>
+        <div class="lang-switch">
+          <button id="langEN" class="active" onclick="setLang('en')">EN</button>
+          <button id="langCN" onclick="setLang('cn')">中文</button>
+        </div>
+      </li>
+    </ul>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ======================== Hero ======================== -->
+<section class="hero" id="hero">
+  <canvas id="particleCanvas"></canvas>
+  <div class="container">
+    <div class="hero-logo-wrap">
+      <img src="posim_logo.png" alt="POSIM Logo" class="hero-logo">
+    </div>
+    <h1 class="hero-title" data-en="POSIM: A General-Purpose Social Media Public Opinion Simulation Framework Based on Metacognitive Agents" data-cn="POSIM：基于元认知智能体的通用社交媒体舆情仿真框架">
+      POSIM: A General-Purpose Social Media Public Opinion Simulation Framework Based on Metacognitive Agents
+    </h1>
+    <p class="hero-subtitle" data-en="Embedding Large Language Models into a layered EBDI cognitive architecture to build metacognitive agents with explicit cognitive states and traceable decision chains, driven by Hawkes self-exciting point processes for high-fidelity public opinion simulation." data-cn="将大语言模型嵌入EBDI分层认知框架，构建具有显式认知状态和可追溯决策链的元认知智能体，以霍克斯自激点过程驱动高保真舆情仿真。">
+      Embedding Large Language Models into a layered EBDI cognitive architecture to build metacognitive agents with explicit cognitive states and traceable decision chains, driven by Hawkes self-exciting point processes for high-fidelity public opinion simulation.
+    </p>
+    <p class="hero-quote">"All models are wrong, but some are useful." — George E. P. Box</p>
+
+    <div class="hero-buttons">
+      <a href="https://github.com/DeepCog/POSIM" class="btn btn-primary" target="_blank">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        <span data-en="Code" data-cn="代码">Code</span>
+      </a>
+      <a href="#" class="btn btn-outline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <span data-en="Paper (PDF)" data-cn="论文 (PDF)">Paper (PDF)</span>
+      </a>
+      <a href="#" class="btn btn-outline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        <span data-en="Online Demo" data-cn="在线演示">Online Demo</span>
+      </a>
+      <a href="#datasets" class="btn btn-outline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        <span data-en="Datasets" data-cn="数据集">Datasets</span>
+      </a>
+      <a href="#citation" class="btn btn-outline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 010-5C7 4 6 9 6 9zm0 0c0 3-1 5-3 7m15-7h1.5a2.5 2.5 0 000-5C17 4 18 9 18 9zm0 0c0 3 1 5 3 7"/></svg>
+        <span data-en="Cite" data-cn="引用">Cite</span>
+      </a>
+    </div>
+
+    <div class="hero-badges">
+      <span class="badge"><span class="badge-dot green"></span> Python 3.8+</span>
+      <span class="badge"><span class="badge-dot blue"></span> PyTorch 2.0+</span>
+      <span class="badge"><span class="badge-dot purple"></span> OpenAI Compatible LLM</span>
+      <span class="badge"><span class="badge-dot orange"></span> MIT License</span>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Overview / Comparison ======================== -->
+<section id="overview">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label" data-en="Overview" data-cn="概览">Overview</span>
+      <h2 class="section-title" data-en="Why POSIM?" data-cn="为什么需要 POSIM？">Why POSIM?</h2>
+      <p class="section-desc" data-en="Existing LLM-driven social simulation frameworks treat models as end-to-end behavior mappers without explicit cognitive states. POSIM addresses this by embedding LLMs into a structured cognitive architecture." data-cn="现有的大语言模型驱动社会仿真框架将模型作为端到端的行为映射器，缺乏显式认知状态建模。POSIM 通过将 LLM 嵌入结构化认知架构来解决这一问题。">
+        Existing LLM-driven social simulation frameworks treat models as end-to-end behavior mappers without explicit cognitive states. POSIM addresses this by embedding LLMs into a structured cognitive architecture.
+      </p>
+    </div>
+
+    <div class="comparison-table-wrapper reveal">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th data-en="Platform" data-cn="平台">Platform</th>
+            <th data-en="Cognitive Mechanism" data-cn="认知机制">Cognitive Mechanism</th>
+            <th data-en="Real-Data Validation" data-cn="真实数据验证">Real-Data Validation</th>
+            <th data-en="Strategy Evaluation" data-cn="策略推演">Strategy Evaluation</th>
+            <th data-en="Multi-Type Agents" data-cn="多类型智能体">Multi-Type Agents</th>
+            <th data-en="Temporal Precision" data-cn="时间精度">Temporal Precision</th>
+            <th data-en="Scalability" data-cn="可扩展性">Scalability</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>S3</td><td class="cross">✗</td><td class="check">✓</td><td class="cross">✗</td><td class="cross">✗</td><td>★★★</td><td>★★★</td></tr>
+          <tr><td>HiSim</td><td class="cross">✗</td><td class="check">✓</td><td class="cross">✗</td><td class="check">✓</td><td>★★</td><td>★★</td></tr>
+          <tr><td>GA-S3</td><td class="cross">✗</td><td class="check">✓</td><td class="cross">✗</td><td class="check">✓</td><td>★★★</td><td>★★</td></tr>
+          <tr><td>SPARK</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td class="check">✓</td><td>★★</td><td>★★</td></tr>
+          <tr><td>OASIS</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td>★★★★</td><td>★★★★</td></tr>
+          <tr><td>TrendSim</td><td class="cross">✗</td><td class="cross">✗</td><td class="cross">✗</td><td class="check">✓</td><td>★★★★</td><td>★★★</td></tr>
+          <tr><td>LMAgent</td><td class="cross">✗</td><td class="check">✓</td><td class="cross">✗</td><td class="check">✓</td><td>★★</td><td>★★</td></tr>
+          <tr class="highlight-row"><td><strong>POSIM (Ours)</strong></td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td><strong>★★★★★</strong></td><td><strong>★★★★★</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Key Contributions ======================== -->
+<section id="contributions">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label" data-en="Contributions" data-cn="主要贡献">Contributions</span>
+      <h2 class="section-title" data-en="Key Contributions" data-cn="主要贡献">Key Contributions</h2>
+    </div>
+    <div class="contributions-grid reveal">
+      <div class="contrib-card">
+        <div class="contrib-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        </div>
+        <h3 data-en="EBDI Metacognitive Agent Architecture" data-cn="EBDI 元认知智能体架构">EBDI Metacognitive Agent Architecture</h3>
+        <p data-en="Embeds LLMs into a layered cognitive framework (Perception → Belief → Desire → Intention → Action). Three cognitive subsystems are each powered by independent LLM calls, making the behavior generation process fully traceable." data-cn="将 LLM 嵌入分层认知框架（感知 → 信念 → 欲望 → 意图 → 行为），三个认知子系统各由独立 LLM 调用完成，行为生成过程完全可追溯。">
+          Embeds LLMs into a layered cognitive framework (Perception &rarr; Belief &rarr; Desire &rarr; Intention &rarr; Action). Three cognitive subsystems are each powered by independent LLM calls, making the behavior generation process fully traceable.
+        </p>
+      </div>
+      <div class="contrib-card">
+        <div class="contrib-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h3 data-en="Hybrid Time-Event Driven Environment" data-cn="时间-事件混合驱动仿真环境">Hybrid Time-Event Driven Environment</h3>
+        <p data-en="Hawkes self-exciting point processes jointly model exogenous event shocks and endogenous user interactions, combined with circadian rhythm modulation, reproducing non-stationary activity patterns at minute-level temporal resolution." data-cn="霍克斯自激点过程统一建模外生事件冲击与内生用户交互，叠加昼夜节律调制，在分钟级时间分辨率下再现非平稳活跃模式。">
+          Hawkes self-exciting point processes jointly model exogenous event shocks and endogenous user interactions, combined with circadian rhythm modulation, reproducing non-stationary activity patterns at minute-level temporal resolution.
+        </p>
+      </div>
+      <div class="contrib-card">
+        <div class="contrib-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        </div>
+        <h3 data-en="Three-Tier Progressive Validation" data-cn="三层递进验证体系">Three-Tier Progressive Validation</h3>
+        <p data-en="Drawing on classical V&V methodology: micro-level behavioral mechanism calibration → macro-level emergent phenomenon verification → statistical result consistency alignment, building simulation credibility layer by layer." data-cn="借鉴仿真工程 V&V 方法论：微观行为机制校准 → 宏观涌现现象检验 → 统计结果一致性对齐，逐层建立仿真可信度。">
+          Drawing on classical V&amp;V methodology: micro-level behavioral mechanism calibration &rarr; macro-level emergent phenomenon verification &rarr; statistical result consistency alignment, building simulation credibility layer by layer.
+        </p>
+      </div>
+      <div class="contrib-card">
+        <div class="contrib-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </div>
+        <h3 data-en="Highly Decoupled Modular Architecture" data-cn="高度解耦的模块化架构">Highly Decoupled Modular Architecture</h3>
+        <p data-en="Agents, simulation environment, and strategy evaluation communicate through standard interfaces — swap the cognitive architecture, change the time engine, or plug in new evaluation metrics without touching other modules." data-cn="智能体、仿真环境、策略推演三大核心组件通过标准接口通信——更换认知架构、切换时间引擎或接入新评估指标，无需修改其他模块。">
+          Agents, simulation environment, and strategy evaluation communicate through standard interfaces — swap the cognitive architecture, change the time engine, or plug in new evaluation metrics without touching other modules.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Framework Overview ======================== -->
+<section id="framework">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label" data-en="Architecture" data-cn="架构">Architecture</span>
+      <h2 class="section-title" data-en="Framework Overview" data-cn="框架总览">Framework Overview</h2>
+      <p class="section-desc" data-en="POSIM consists of three core components: (1) Metacognitive Agents built on EBDI architecture, (2) Hawkes process-driven simulation environment, and (3) Strategy evaluation module for counterfactual reasoning." data-cn="POSIM 由三大核心组件协同构成：(1) 基于 EBDI 架构的元认知智能体，(2) 霍克斯过程驱动的仿真环境，(3) 支持反事实推理的策略推演模块。">
+        POSIM consists of three core components: (1) Metacognitive Agents built on EBDI architecture, (2) Hawkes process-driven simulation environment, and (3) Strategy evaluation module for counterfactual reasoning.
+      </p>
+    </div>
+    <div class="framework-img-wrap reveal" onclick="openLightbox(this.querySelector('img'))">
+      <img src="framework_overview.png" alt="POSIM Framework Overview">
+    </div>
+    <p class="fig-caption" data-en="&lt;strong&gt;Figure 1.&lt;/strong&gt; POSIM framework architecture. Left: EBDI metacognitive agent cognitive pipeline. Upper-center: Hawkes process-driven simulation environment and virtual social media platform. Lower-right: Strategy evaluation module (Intervenor-Simulator-Evaluator)." data-cn="&lt;strong&gt;图 1.&lt;/strong&gt; POSIM 框架总体架构。左侧为 EBDI 元认知智能体的认知决策链路；中上方为霍克斯点过程驱动的仿真环境与虚拟社交媒体平台；右下方为策略推演模块（干预器-仿真器-评估器）。">
+      <strong>Figure 1.</strong> POSIM framework architecture. Left: EBDI metacognitive agent cognitive pipeline. Upper-center: Hawkes process-driven simulation environment and virtual social media platform. Lower-right: Strategy evaluation module (Intervenor-Simulator-Evaluator).
+    </p>
+
+    <!-- Hawkes equation -->
+    <div class="highlight-box reveal" style="margin-top:40px;">
+      <h3 data-en="Hawkes Self-Exciting Point Process Time Engine" data-cn="霍克斯自激点过程时间引擎">Hawkes Self-Exciting Point Process Time Engine</h3>
+      <p data-en="The conditional intensity function models collective activity as the superposition of a background rate, exogenous event shocks (high intensity, slow decay), and endogenous user interactions (low intensity, fast decay):" data-cn="条件强度函数将群体活跃度建模为背景率、外生事件冲击（大强度·慢衰减）和内生用户交互（弱强度·快衰减）的叠加：">
+        The conditional intensity function models collective activity as the superposition of a background rate, exogenous event shocks (high intensity, slow decay), and endogenous user interactions (low intensity, fast decay):
+      </p>
+      <p style="text-align:center;margin:16px 0;font-size:1.05rem;">
+        $$\lambda(t) = \underbrace{\mu}_{\text{background}} + \underbrace{\sum \alpha_{ext} e^{-\beta_{ext}(t - t_i)}}_{\text{exogenous}} + \underbrace{\sum \alpha_{int} e^{-\beta_{int}(t - t_j)}}_{\text{endogenous}}$$
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== EBDI Agent ======================== -->
+<section id="ebdi">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label" data-en="Cognitive Architecture" data-cn="认知架构">Cognitive Architecture</span>
+      <h2 class="section-title" data-en="EBDI Metacognitive Agent" data-cn="EBDI 元认知智能体">EBDI Metacognitive Agent</h2>
+      <p class="section-desc" data-en="Extending the classical BDI architecture with an emotional dimension, building agents with explicit self-aware cognitive states and auditable multi-stage decision chains." data-cn="在经典 BDI 认知架构上融入情感维度，构建具有显式自我认知状态和可审计多阶段决策链的元认知智能体。">
+        Extending the classical BDI architecture with an emotional dimension, building agents with explicit self-aware cognitive states and auditable multi-stage decision chains.
+      </p>
+    </div>
+
+    <!-- Cognitive Pipeline -->
+    <div class="pipeline-flow reveal">
+      <div class="pipeline-step">
+        <div class="pipeline-step-icon perception">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>
+        </div>
+        <span data-en="Perception" data-cn="感知">Perception</span>
+      </div>
+      <span class="pipeline-arrow">&rarr;</span>
+      <div class="pipeline-step">
+        <div class="pipeline-step-icon belief">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 017 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 017-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        </div>
+        <span data-en="Belief" data-cn="信念">Belief</span>
+      </div>
+      <span class="pipeline-arrow">&rarr;</span>
+      <div class="pipeline-step">
+        <div class="pipeline-step-icon desire">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </div>
+        <span data-en="Desire" data-cn="欲望">Desire</span>
+      </div>
+      <span class="pipeline-arrow">&rarr;</span>
+      <div class="pipeline-step">
+        <div class="pipeline-step-icon intention">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <span data-en="Intention" data-cn="意图">Intention</span>
+      </div>
+      <span class="pipeline-arrow">&rarr;</span>
+      <div class="pipeline-step">
+        <div class="pipeline-step-icon action">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <span data-en="Action" data-cn="行为">Action</span>
+      </div>
+    </div>
+
+    <!-- Four-Layer Belief System -->
+    <h3 style="text-align:center;margin-bottom:20px;font-size:1.1rem;" data-en="Four-Layer Belief System" data-cn="四层信念体系" class="reveal">Four-Layer Belief System</h3>
+    <div class="belief-layers reveal">
+      <div class="belief-card">
+        <span class="emoji">&#x1F464;</span>
+        <h4 data-en="B<sup>id</sup> — Role Identity" data-cn="B<sup>id</sup> — 角色身份">B<sup>id</sup> — Role Identity</h4>
+        <p data-en="Gender, location, occupation, followers, verification type" data-cn="性别、地域、职业、粉丝规模、认证类型">Gender, location, occupation, followers, verification type</p>
+        <span class="stability-tag fixed" data-en="Fixed (Personality Anchor)" data-cn="仿真期间不变">Fixed (Personality Anchor)</span>
+      </div>
+      <div class="belief-card">
+        <span class="emoji">&#x1F9E0;</span>
+        <h4 data-en="B<sup>psy</sup> — Psychological" data-cn="B<sup>psy</sup> — 心理认知">B<sup>psy</sup> — Psychological</h4>
+        <p data-en="Conformity, paranoia, catharsis, curiosity-seeking patterns" data-cn="从众、偏执、宣泄、猎奇等心理模式">Conformity, paranoia, catharsis, curiosity-seeking patterns</p>
+        <span class="stability-tag stable" data-en="Highly Stable" data-cn="高度稳定">Highly Stable</span>
+      </div>
+      <div class="belief-card">
+        <span class="emoji">&#x1F4AC;</span>
+        <h4 data-en="B<sup>evt</sup> — Event Opinion" data-cn="B<sup>evt</sup> — 事件观点">B<sup>evt</sup> — Event Opinion</h4>
+        <p data-en="Stance & reasoning on event entities, dynamically evolving" data-cn="对事件各参与主体的立场与理由，动态演化">Stance &amp; reasoning on event entities, dynamically evolving</p>
+        <span class="stability-tag dynamic" data-en="Dynamically Evolving" data-cn="动态演化">Dynamically Evolving</span>
+      </div>
+      <div class="belief-card">
+        <span class="emoji">&#x1F525;</span>
+        <h4 data-en="B<sup>emo</sup> — Emotional Arousal" data-cn="B<sup>emo</sup> — 情绪激发">B<sup>emo</sup> — Emotional Arousal</h4>
+        <p data-en="6D emotion vector: happy, sad, angry, fear, surprise, disgust" data-cn="六维情绪向量：快乐、悲伤、愤怒、恐惧、惊讶、厌恶">6D emotion vector: happy, sad, angry, fear, surprise, disgust</p>
+        <span class="stability-tag volatile" data-en="Real-time Fluctuation" data-cn="实时波动">Real-time Fluctuation</span>
+      </div>
+    </div>
+
+    <!-- Intention 3-level CoT -->
+    <div class="highlight-box reveal">
+      <h3 data-en="Three-Level Chain-of-Thought Intention System" data-cn="三级思维链意图系统">Three-Level Chain-of-Thought Intention System</h3>
+      <p data-en="Unlike single-step behavior generation, the intention subsystem uses a three-level progressive decision-making process:" data-cn="与传统单步行为生成不同，意图子系统采用三级递进决策："></p>
+      <div style="margin-top:12px;">
+        <p><strong>L1</strong> — <span data-en="<strong>What to do & to whom:</strong> Select action type (like / repost / comment / original post) and target" data-cn="<strong>做什么 & 对谁做：</strong>从原子操作中选择行为类别，确定互动目标"><strong>What to do &amp; to whom:</strong> Select action type (like / repost / comment / original post) and target</span></p>
+        <p style="margin-top:6px;"><strong>L2</strong> — <span data-en="<strong>How to express:</strong> Plan across 4 orthogonal dimensions: Emotion × Stance × Style × Narrative" data-cn="<strong>以什么方式表达：</strong>在四个正交维度上规划：情绪 × 立场 × 风格 × 叙事"><strong>How to express:</strong> Plan across 4 orthogonal dimensions: Emotion &times; Stance &times; Style &times; Narrative</span></p>
+        <p style="margin-top:6px;"><strong>L3</strong> — <span data-en="<strong>What to say:</strong> Generate role-consistent social media text under L1+L2 constraints" data-cn="<strong>具体说什么：</strong>在 L1+L2 约束下生成符合角色特征的社交媒体文本"><strong>What to say:</strong> Generate role-consistent social media text under L1+L2 constraints</span></p>
+      </div>
+    </div>
+
+    <!-- Four Agent Types -->
+    <h3 style="text-align:center;margin:40px 0 20px;font-size:1.1rem;" data-en="Four Heterogeneous Agent Types" data-cn="四类异质性智能体" class="reveal">Four Heterogeneous Agent Types</h3>
+    <div class="agent-grid reveal">
+      <div class="agent-card">
+        <div class="agent-avatar citizen-bg">&#x1F9D1;</div>
+        <h4 data-en="Citizen" data-cn="普通网民">Citizen</h4>
+        <p class="role" data-en="Primary opinion participants" data-cn="舆情参与绝对主体">Primary opinion participants</p>
+        <p data-en="Colloquial, fragmented, emotion-driven. Impulsive expression under high arousal." data-cn="口语化、碎片化、情绪驱动。高唤醒情绪下产生冲动性表达。">Colloquial, fragmented, emotion-driven. Impulsive expression under high arousal.</p>
+      </div>
+      <div class="agent-card">
+        <div class="agent-avatar kol-bg">&#x1F31F;</div>
+        <h4 data-en="KOL" data-cn="意见领袖">KOL</h4>
+        <p class="role" data-en="Key intermediary in two-step flow" data-cn="二级传播关键中介">Key intermediary in two-step flow</p>
+        <p data-en="Independent views, agenda-setting. Significant influence on downstream belief updates." data-cn="观点独立、议程设置效应。对下游网民信念更新有显著引导作用。">Independent views, agenda-setting. Significant influence on downstream belief updates.</p>
+      </div>
+      <div class="agent-card">
+        <div class="agent-avatar media-bg">&#x1F4F0;</div>
+        <h4 data-en="Media" data-cn="媒体">Media</h4>
+        <p class="role" data-en="Information collection & dissemination" data-cn="信息采集与传播">Information collection &amp; dissemination</p>
+        <p data-en="Formal, restrained, timely. Information confirmation at critical junctures." data-cn="规范克制、时效准确。关键节点上信息确认与议程框定。">Formal, restrained, timely. Information confirmation at critical junctures.</p>
+      </div>
+      <div class="agent-card">
+        <div class="agent-avatar gov-bg">&#x1F3DB;</div>
+        <h4 data-en="Government" data-cn="政府">Government</h4>
+        <p class="role" data-en="Official stance & public governance" data-cn="官方立场与公共治理">Official stance &amp; public governance</p>
+        <p data-en="Low frequency, high authority. Post-fermentation statements with turning-point impact." data-cn="低频高权威。事件发酵后发布声明，对走势有转折性影响。">Low frequency, high authority. Post-fermentation statements with turning-point impact.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Datasets ======================== -->
+<section id="datasets">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label" data-en="Datasets" data-cn="数据集">Datasets</span>
+      <h2 class="section-title" data-en="Experimental Datasets" data-cn="实验数据集">Experimental Datasets</h2>
+      <p class="section-desc" data-en="Three representative public opinion events from Sina Weibo spanning social controversy, campus incidents, and food safety. Simulation precision: 10 min/step." data-cn="来自新浪微博平台的三个代表性社会舆情事件，涵盖社会争议、校园事件和食品安全。仿真精度：10 分钟/步。">
+        Three representative public opinion events from Sina Weibo spanning social controversy, campus incidents, and food safety. Simulation precision: 10 min/step.
+      </p>
+    </div>
+    <div class="dataset-cards reveal">
+      <div class="dataset-card">
+        <span class="dataset-tag tag-controversy" data-en="Social Controversy" data-cn="社会争议">Social Controversy</span>
+        <h4 data-en="Luxury Earring (LE)" data-cn="天价耳环事件 (LE)">Luxury Earring (LE)</h4>
+        <p data-en="An actress's earrings identified as ¥2.3M luxury goods, sparking intense public debate on celebrity extravagance." data-cn="某演员成人礼照片中佩戴的耳饰被指认为 230 万奢侈品，引发公众对明星炫富的激烈争议。">An actress's earrings identified as &yen;2.3M luxury goods, sparking intense public debate on celebrity extravagance.</p>
+        <div class="dataset-stats">
+          <div class="dataset-stat"><strong>1,530</strong><span data-en="Users" data-cn="用户">Users</span></div>
+          <div class="dataset-stat"><strong>34,218</strong><span data-en="Posts" data-cn="帖子">Posts</span></div>
+          <div class="dataset-stat"><strong>~46h</strong><span data-en="Duration" data-cn="时间跨度">Duration</span></div>
+          <div class="dataset-stat"><strong>276</strong><span data-en="Sim. Steps" data-cn="仿真步数">Sim. Steps</span></div>
+        </div>
+      </div>
+      <div class="dataset-card">
+        <span class="dataset-tag tag-campus" data-en="Campus Incident" data-cn="校园事件">Campus Incident</span>
+        <h4 data-en="WHU Library (WL)" data-cn="武大图书馆事件 (WL)">WHU Library (WL)</h4>
+        <p data-en="Harassment allegation dispute at Wuhan University; court ruling reignited large-scale debate on justice and campus safety." data-cn="武汉大学图书馆性骚扰指控纠纷，法院判决再次引爆关于司法公正和校园安全的大规模讨论。">Harassment allegation dispute at Wuhan University; court ruling reignited large-scale debate on justice and campus safety.</p>
+        <div class="dataset-stats">
+          <div class="dataset-stat"><strong>1,843</strong><span data-en="Users" data-cn="用户">Users</span></div>
+          <div class="dataset-stat"><strong>51,647</strong><span data-en="Posts" data-cn="帖子">Posts</span></div>
+          <div class="dataset-stat"><strong>~190h</strong><span data-en="Duration" data-cn="时间跨度">Duration</span></div>
+          <div class="dataset-stat"><strong>1,140</strong><span data-en="Sim. Steps" data-cn="仿真步数">Sim. Steps</span></div>
+        </div>
+      </div>
+      <div class="dataset-card">
+        <span class="dataset-tag tag-food" data-en="Food Safety" data-cn="食品安全">Food Safety</span>
+        <h4 data-en="Xibei Prepared Food (XF)" data-cn="西贝预制菜事件 (XF)">Xibei Prepared Food (XF)</h4>
+        <p data-en="Internet celebrity publicly accused a restaurant chain of extensive prepared food use, sparking food safety concerns." data-cn="网红企业家公开指控餐饮品牌大量使用预制菜，引发食品安全和消费者知情权广泛关注。">Internet celebrity publicly accused a restaurant chain of extensive prepared food use, sparking food safety concerns.</p>
+        <div class="dataset-stats">
+          <div class="dataset-stat"><strong>1,987</strong><span data-en="Users" data-cn="用户">Users</span></div>
+          <div class="dataset-stat"><strong>14,892</strong><span data-en="Posts" data-cn="帖子">Posts</span></div>
+          <div class="dataset-stat"><strong>~71h</strong><span data-en="Duration" data-cn="时间跨度">Duration</span></div>
+          <div class="dataset-stat"><strong>426</strong><span data-en="Sim. Steps" data-cn="仿真步数">Sim. Steps</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Results ======================== -->
+<section id="results">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label" data-en="Experiments" data-cn="实验">Experiments</span>
+      <h2 class="section-title" data-en="Results & Analysis" data-cn="实验结果与分析">Results &amp; Analysis</h2>
+    </div>
+
+    <!-- Summary metric highlights -->
+    <div class="highlight-box reveal" style="border-left-color:var(--accent);">
+      <h3 data-en="Overall Performance Improvement" data-cn="综合性能提升">Overall Performance Improvement</h3>
+      <p data-en="POSIM's behavioral, content, and topological metrics outperform the best baseline across three real-world Weibo datasets:" data-cn="POSIM 在三个真实微博数据集上的行为、内容和拓扑指标均超越最优基线：">POSIM's behavioral, content, and topological metrics outperform the best baseline across three real-world Weibo datasets:</p>
+      <div class="metric-highlights">
+        <div class="metric-highlight-card">
+          <div class="value">+5.0%</div>
+          <div class="label" data-en="Behavior Layer" data-cn="行为层">Behavior Layer</div>
+        </div>
+        <div class="metric-highlight-card">
+          <div class="value">+13.0%</div>
+          <div class="label" data-en="Content Layer" data-cn="内容层">Content Layer</div>
+        </div>
+        <div class="metric-highlight-card">
+          <div class="value">+8.5%</div>
+          <div class="label" data-en="Topology Layer" data-cn="拓扑层">Topology Layer</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Validation Framework -->
+    <h3 style="text-align:center;margin:40px 0 20px;font-size:1.1rem;" data-en="Three-Tier Validation Framework" data-cn="三层递进验证体系" class="reveal">Three-Tier Validation Framework</h3>
+    <div class="validation-tiers reveal">
+      <div class="tier-card">
+        <span class="tier-num">1</span>
+        <h4 data-en="Micro-Level Mechanism Calibration" data-cn="微观行为机制校准">Micro-Level Mechanism Calibration</h4>
+        <p data-en="Cognitive-behavior chain consistency (0–5), personality stability (0–1), decision robustness (0–1)" data-cn="认知行为链一致性 (0–5)，人格稳定性 (0–1)，决策抗扰性 (0–1)">Cognitive-behavior chain consistency (0–5), personality stability (0–1), decision robustness (0–1)</p>
+      </div>
+      <div class="tier-card">
+        <span class="tier-num">2</span>
+        <h4 data-en="Macro-Level Emergence Verification" data-cn="宏观涌现现象校准">Macro-Level Emergence Verification</h4>
+        <p data-en="Opinion lifecycle, multi-agent heterogeneity, emotional polarization, scale-free topology & cascade power-law" data-cn="舆情生命周期，多主体行为异质性，情绪极化效应，无标度拓扑与级联幂律">Opinion lifecycle, multi-agent heterogeneity, emotional polarization, scale-free topology &amp; cascade power-law</p>
+      </div>
+      <div class="tier-card">
+        <span class="tier-num">3</span>
+        <h4 data-en="Statistical Consistency Alignment" data-cn="统计结果一致性校准">Statistical Consistency Alignment</h4>
+        <p data-en="9 quantitative metrics across behavior (3), content (3), and topology (3) layers" data-cn="行为层（3个指标）、内容层（3个指标）、拓扑层（3个指标），共9个定量指标">9 quantitative metrics across behavior (3), content (3), and topology (3) layers</p>
+      </div>
+    </div>
+
+    <!-- ===== Tier 1: Micro Validation ===== -->
+    <div style="margin-top:48px;" class="reveal">
+      <h3 class="result-section-title" data-en="Tier 1 · Micro-Level Behavioral Mechanism Validation" data-cn="第一层 · 微观行为机制验证">Tier 1 &middot; Micro-Level Behavioral Mechanism Validation</h3>
+      <div>
+        <p style="text-align:center;margin-bottom:16px;font-size:0.9rem;color:var(--text-secondary);" data-en="100 randomly sampled users, 12 simulation rounds, four methods under identical conditions." data-cn="随机抽取 100 名用户，12 轮仿真，四种方法在完全相同条件下对比。">100 randomly sampled users, 12 simulation rounds, four methods under identical conditions.</p>
+        <div class="result-table-wrap">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th data-en="Method" data-cn="方法">Method</th>
+                <th>Cognitive-Behavior Chain (0–5) &uarr;</th>
+                <th>Personality Stability (0–1) &uarr;</th>
+                <th>Decision Robustness (0–1) &uarr;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Direct-Nothink</td><td>1.47 &pm; 0.50</td><td>0.478 &pm; 0.263</td><td>0.629 &pm; 0.240</td></tr>
+              <tr><td>Direct-Think</td><td>1.75 &pm; 0.43</td><td>0.448 &pm; 0.269</td><td>0.603 &pm; 0.299</td></tr>
+              <tr><td>CoT</td><td>3.09 &pm; 0.29</td><td>0.516 &pm; 0.272</td><td>0.541 &pm; 0.356</td></tr>
+              <tr class="ours-row"><td><strong>EBDI (Ours)</strong></td><td class="best">4.64 &pm; 0.48</td><td class="best">0.661 &pm; 0.215</td><td class="best">0.695 &pm; 0.213</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="highlight-box" style="margin-top:24px;border-left-color:#8b5cf6;">
+          <p data-en="&lt;strong&gt;Key Finding:&lt;/strong&gt; CoT's decision robustness is actually the &lt;em&gt;lowest&lt;/em&gt; (0.541) — without stable state anchoring, input perturbations ripple through the entire reasoning chain. EBDI's explicit belief states provide a cognitive anchoring effect, maintaining decision stability." data-cn="&lt;strong&gt;关键发现：&lt;/strong&gt;CoT 的决策抗扰性反而&lt;em&gt;最低&lt;/em&gt;（0.541）——单次调用中缺乏稳定的状态锚定，输入扰动会波及整个推理链条。EBDI 通过显式信念状态提供认知锚定效应，保持决策稳定性。">
+            <strong>Key Finding:</strong> CoT's decision robustness is actually the <em>lowest</em> (0.541) — without stable state anchoring, input perturbations ripple through the entire reasoning chain. EBDI's explicit belief states provide a cognitive anchoring effect, maintaining decision stability.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Tier 2: Macro Emergence ===== -->
+    <div style="margin-top:56px;" class="reveal">
+      <h3 class="result-section-title" data-en="Tier 2 · Macro-Level Emergent Phenomena" data-cn="第二层 · 宏观涌现现象">Tier 2 &middot; Macro-Level Emergent Phenomena</h3>
+      <div>
+        <p style="text-align:center;margin-bottom:20px;font-size:0.9rem;color:var(--text-secondary);" data-en="All macro phenomena emerged spontaneously from agent interactions — none were pre-programmed." data-cn="以下所有宏观现象均非预设规则驱动，而是由智能体交互自发涌现。">All macro phenomena emerged spontaneously from agent interactions — none were pre-programmed.</p>
+        <div class="figure-gallery">
+          <figure class="figure-card" onclick="openLightbox(this.querySelector('img'))">
+            <img src="fig_lifecycle.png" alt="Opinion Lifecycle">
+            <figcaption>
+              <strong data-en="Figure 2. Opinion Lifecycle" data-cn="图 2. 舆情生命周期">Figure 2. Opinion Lifecycle</strong>
+              <span data-en="Multi-stage lifecycle from outbreak → plateau → resurgence → decline. E₁–E₇ mark exogenous event injection points. Cumulative S-curve closely matches diffusion theory." data-cn="从爆发、平台、复燃到衰退的多阶段生命周期。E₁–E₇ 标记外生事件注入点。累积 S 曲线与扩散理论高度吻合。">Multi-stage lifecycle from outbreak &rarr; plateau &rarr; resurgence &rarr; decline. E&#x2081;–E&#x2087; mark exogenous event injection points. Cumulative S-curve closely matches diffusion theory.</span>
+            </figcaption>
+          </figure>
+          <figure class="figure-card" onclick="openLightbox(this.querySelector('img'))">
+            <img src="fig_heterogeneity.png" alt="Agent Heterogeneity">
+            <figcaption>
+              <strong data-en="Figure 3. Multi-Agent Behavioral Heterogeneity" data-cn="图 3. 多主体行为异质性">Figure 3. Multi-Agent Behavioral Heterogeneity</strong>
+              <span data-en="(a) Emotional intensity over time; (b) Content length distributions; (c) Multi-dimensional behavioral radar charts." data-cn="(a) 情绪强度时序演化；(b) 内容长度分布；(c) 多维行为特征雷达图。">(a) Emotional intensity over time; (b) Content length distributions; (c) Multi-dimensional behavioral radar charts.</span>
+            </figcaption>
+          </figure>
+          <figure class="figure-card" onclick="openLightbox(this.querySelector('img'))">
+            <img src="fig_polarization.png" alt="Emotional Polarization">
+            <figcaption>
+              <strong data-en="Figure 4. Emotional Polarization" data-cn="图 4. 情绪极化效应">Figure 4. Emotional Polarization</strong>
+              <span data-en="PI rises from 0.41 to 0.67 (63% increase, p < 0.001), consistent with echo chamber theory. Escalation/de-escalation ratio: 4.78 (ratchet effect)." data-cn="极化指数从 0.41 攀升至 0.67（升幅 63%，p < 0.001），与回音室理论一致。升级/降级比 4.78（棘轮效应）。">PI rises from 0.41 to 0.67 (63% increase, p &lt; 0.001), consistent with echo chamber theory. Escalation/de-escalation ratio: 4.78 (ratchet effect).</span>
+            </figcaption>
+          </figure>
+          <figure class="figure-card" onclick="openLightbox(this.querySelector('img'))">
+            <img src="fig_powerlaw.png" alt="Power-law Distribution">
+            <figcaption>
+              <strong data-en="Figure 5. Scale-Free Topology & Cascade Power-Law" data-cn="图 5. 无标度拓扑与级联幂律">Figure 5. Scale-Free Topology &amp; Cascade Power-Law</strong>
+              <span data-en="Degree distribution: γ = 1.87 (R² = 0.880); cascade CCDF: α = 3.70 — reproducing the 'most go unnoticed, few go viral' long-tail phenomenon." data-cn="度分布幂律指数 γ = 1.87 (R² = 0.880)；级联 CCDF α = 3.70——再现"多数无人问津、少数病毒传播"的长尾现象。">Degree distribution: &gamma; = 1.87 (R&sup2; = 0.880); cascade CCDF: &alpha; = 3.70 — reproducing the "most go unnoticed, few go viral" long-tail phenomenon.</span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Tier 3: Statistical Calibration ===== -->
+    <div style="margin-top:56px;" class="reveal">
+      <h3 class="result-section-title" data-en="Tier 3 · Statistical Consistency Calibration" data-cn="第三层 · 统计结果一致性校准">Tier 3 &middot; Statistical Consistency Calibration</h3>
+      <div>
+        <figure class="figure-card full-width" style="margin-bottom:24px;" onclick="openLightbox(this.querySelector('img'))">
+          <img src="fig_calibration.png" alt="Calibration Results">
+          <figcaption>
+            <strong data-en="Figure 6. Behavior & Activity Calibration" data-cn="图 6. 行为热度与分布校准">Figure 6. Behavior &amp; Activity Calibration</strong>
+            <span data-en="Each row corresponds to one event. Left: activity time series comparison; Right: behavioral type distribution comparison." data-cn="每行对应一个事件，左侧为活跃度时序对比，右侧为行为类型比例对比。">Each row corresponds to one event. Left: activity time series comparison; Right: behavioral type distribution comparison.</span>
+          </figcaption>
+        </figure>
+
+        <!-- Full calibration table -->
+        <h4 style="text-align:center;margin-bottom:12px;" data-en="Statistical Calibration Results" data-cn="统计校准结果">Statistical Calibration Results</h4>
+        <div class="result-table-wrap">
+          <table class="result-table" style="font-size:0.8rem;">
+            <thead>
+              <tr>
+                <th data-en="Dataset" data-cn="数据集">Data</th>
+                <th data-en="Method" data-cn="方法">Method</th>
+                <th>JSD &darr;</th>
+                <th>Act.&rho; &uarr;</th>
+                <th>RMSE &darr;</th>
+                <th data-en="Beh.Avg" data-cn="行为均">Beh.Avg &uarr;</th>
+                <th>Confr. &uarr;</th>
+                <th>|&Delta;TTR| &darr;</th>
+                <th>|&Delta;S&#x0304;| &darr;</th>
+                <th data-en="Cont.Avg" data-cn="内容均">Cont.Avg &uarr;</th>
+                <th>Net. &uarr;</th>
+                <th>Casc. &uarr;</th>
+                <th>PL &uarr;</th>
+                <th data-en="Topo.Avg" data-cn="拓扑均">Topo.Avg &uarr;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- LE -->
+              <tr><td rowspan="4"><strong>LE</strong></td><td>Rule ABM</td><td>0.427</td><td>0.808</td><td>0.158</td><td>0.741</td><td>—</td><td>—</td><td>—</td><td>—</td><td>0.479</td><td>0.633</td><td>0.543</td><td>0.552</td></tr>
+              <tr><td>w/ LLM</td><td>0.289</td><td>0.799</td><td>0.162</td><td>0.783</td><td>0.544</td><td>0.185</td><td>0.319</td><td>0.680</td><td>0.565</td><td>0.735</td><td>0.918</td><td>0.739</td></tr>
+              <tr><td>w/ CoT</td><td>0.394</td><td>0.806</td><td>0.151</td><td>0.754</td><td>0.584</td><td>0.141</td><td>0.123</td><td>0.774</td><td>0.755</td><td>0.777</td><td>0.756</td><td>0.763</td></tr>
+              <tr class="ours-row"><td><strong>POSIM</strong></td><td class="best">0.193</td><td class="best">0.809</td><td>0.154</td><td class="best">0.821</td><td class="best">0.790</td><td class="best">0.030</td><td class="best">0.029</td><td class="best">0.910</td><td class="best">0.895</td><td class="best">0.830</td><td class="best">0.961</td><td class="best">0.896</td></tr>
+              <!-- WL -->
+              <tr><td rowspan="4"><strong>WL</strong></td><td>Rule ABM</td><td>0.318</td><td>0.681</td><td>0.126</td><td>0.746</td><td>—</td><td>—</td><td>—</td><td>—</td><td>0.869</td><td>0.696</td><td>0.642</td><td>0.736</td></tr>
+              <tr><td>w/ LLM</td><td>0.237</td><td>0.722</td><td>0.119</td><td>0.789</td><td>0.453</td><td>0.172</td><td>0.360</td><td>0.640</td><td>0.528</td><td>0.667</td><td>0.580</td><td>0.592</td></tr>
+              <tr><td>w/ CoT</td><td>0.229</td><td>0.744</td><td>0.116</td><td>0.800</td><td>0.474</td><td>0.091</td><td>0.365</td><td>0.673</td><td>0.941</td><td>0.740</td><td>0.673</td><td>0.784</td></tr>
+              <tr class="ours-row"><td><strong>POSIM</strong></td><td class="best">0.073</td><td class="best">0.750</td><td>0.118</td><td class="best">0.853</td><td class="best">0.841</td><td class="best">0.010</td><td class="best">0.203</td><td class="best">0.876</td><td>0.850</td><td class="best">0.758</td><td class="best">0.965</td><td class="best">0.858</td></tr>
+              <!-- XF -->
+              <tr><td rowspan="4"><strong>XF</strong></td><td>Rule ABM</td><td>0.312</td><td>0.664</td><td>0.187</td><td>0.721</td><td>—</td><td>—</td><td>—</td><td>—</td><td>0.528</td><td>0.614</td><td>0.279</td><td>0.474</td></tr>
+              <tr><td>w/ LLM</td><td>0.244</td><td>0.671</td><td>0.190</td><td>0.746</td><td>0.765</td><td>0.117</td><td>0.076</td><td>0.858</td><td>0.774</td><td>0.695</td><td>0.482</td><td>0.650</td></tr>
+              <tr><td>w/ CoT</td><td>0.293</td><td>0.699</td><td>0.181</td><td>0.742</td><td>0.774</td><td>0.134</td><td>0.014</td><td>0.875</td><td>0.767</td><td>0.696</td><td>0.460</td><td>0.641</td></tr>
+              <tr class="ours-row"><td><strong>POSIM</strong></td><td class="best">0.148</td><td class="best">0.727</td><td class="best">0.168</td><td class="best">0.804</td><td class="best">0.843</td><td class="best">0.019</td><td>0.046</td><td class="best">0.926</td><td class="best">0.885</td><td class="best">0.696</td><td class="best">0.513</td><td class="best">0.698</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Ablation Study ===== -->
+    <div style="margin-top:56px;" class="reveal">
+      <h3 class="result-section-title" data-en="Ablation Study" data-cn="消融实验">Ablation Study</h3>
+      <div>
+        <p style="text-align:center;margin-bottom:16px;font-size:0.9rem;color:var(--text-secondary);" data-en="Ablation study on the LE dataset to verify the necessity of each module." data-cn="在天价耳环数据集上验证各模块的必要性。">Ablation study on the LE dataset to verify the necessity of each module.</p>
+        <div class="result-table-wrap">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th data-en="Configuration" data-cn="配置">Configuration</th>
+                <th>JSD &darr;</th>
+                <th>&rho; &uarr;</th>
+                <th>RMSE &darr;</th>
+                <th>Confr. &uarr;</th>
+                <th>|&Delta;TTR| &darr;</th>
+                <th>|&Delta;S&#x0304;| &darr;</th>
+                <th>Net. &uarr;</th>
+                <th>Casc. &uarr;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="ours-row"><td><strong>Full POSIM</strong></td><td class="best">0.193</td><td class="best">0.809</td><td class="best">0.154</td><td class="best">0.790</td><td class="best">0.030</td><td class="best">0.029</td><td class="best">0.895</td><td class="best">0.830</td></tr>
+              <tr><td>w/o Belief</td><td>0.258</td><td>0.762</td><td>0.172</td><td>0.706</td><td>0.058</td><td>0.067</td><td>0.861</td><td>0.773</td></tr>
+              <tr><td>w/o Desire</td><td>0.267</td><td>0.779</td><td>0.169</td><td>0.682</td><td>0.071</td><td>0.083</td><td>0.853</td><td>0.788</td></tr>
+              <tr><td>w/o Intention</td><td>0.237</td><td>0.802</td><td>0.159</td><td>0.728</td><td>0.064</td><td>0.055</td><td>0.858</td><td>0.814</td></tr>
+              <tr><td>w/o Hawkes</td><td>0.177</td><td>0.235</td><td>0.362</td><td>0.787</td><td>0.207</td><td>0.028</td><td>0.822</td><td>0.754</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="highlight-box" style="margin-top:24px;border-left-color:#f59e0b;">
+          <h3 data-en="Ablation Insights" data-cn="消融发现">Ablation Insights</h3>
+          <p data-en="Each component has a clear functional division:" data-cn="各组件具有清晰的功能分工：">Each component has a clear functional division:</p>
+          <ul style="margin-top:8px;padding-left:20px;font-size:0.88rem;color:var(--text-secondary);line-height:1.8;">
+            <li data-en="&lt;strong&gt;w/o Hawkes:&lt;/strong&gt; Act.ρ plummets from 0.809 → 0.235; uniform activation destroys temporal dynamics" data-cn="&lt;strong&gt;移除霍克斯引擎：&lt;/strong&gt;Act.ρ 从 0.809 骤降至 0.235，均匀激活丧失时序波动"><strong>w/o Hawkes:</strong> Act.&rho; plummets from 0.809 &rarr; 0.235; uniform activation destroys temporal dynamics</li>
+            <li data-en="&lt;strong&gt;w/o Belief:&lt;/strong&gt; Confrontation similarity drops 0.790 → 0.706; agents lose deep understanding of contentious points" data-cn="&lt;strong&gt;移除信念模块：&lt;/strong&gt;对抗性相似度从 0.790 降至 0.706，丧失对争议焦点的深层理解"><strong>w/o Belief:</strong> Confrontation similarity drops 0.790 &rarr; 0.706; agents lose deep understanding</li>
+            <li data-en="&lt;strong&gt;w/o Desire:&lt;/strong&gt; Content layer degrades most severely (Confr. → 0.682, lowest); motivation is the core driver" data-cn="&lt;strong&gt;移除欲望模块：&lt;/strong&gt;内容层退化最严重（Confr. → 0.682，最低）；动机约束是核心驱动力"><strong>w/o Desire:</strong> Content layer degrades most severely (Confr. &rarr; 0.682, lowest); motivation is the core driver</li>
+            <li data-en="&lt;strong&gt;w/o Intention:&lt;/strong&gt; Lexical diversity worsens most (0.064); three-level CoT critical for diversity and topology" data-cn="&lt;strong&gt;移除意图模块：&lt;/strong&gt;词汇多样性偏差恶化最大（0.064）；三级思维链对多样性和拓扑至关重要"><strong>w/o Intention:</strong> Lexical diversity worsens most (0.064); three-level CoT critical for diversity and topology</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Case Study ======================== -->
+<section id="case-study">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label" data-en="Application" data-cn="应用">Application</span>
+      <h2 class="section-title" data-en="Case Studies" data-cn="案例研究">Case Studies</h2>
+      <p class="section-desc" data-en="Demonstrating POSIM as a computational experiment platform for cognitive priming and counterfactual strategy evaluation." data-cn="展示 POSIM 作为计算实验平台在认知引导和反事实策略评估中的应用。">
+        Demonstrating POSIM as a computational experiment platform for cognitive priming and counterfactual strategy evaluation.
+      </p>
+    </div>
+    <div class="case-grid reveal">
+      <div class="case-card">
+        <img src="fig_cognitive_priming.png" alt="Cognitive Priming Experiment" onclick="openLightbox(this)">
+        <div class="case-card-body">
+          <h4 data-en="Cognitive Priming Experiment" data-cn="认知引导实验">Cognitive Priming Experiment</h4>
+          <p data-en="200 agents, 30 steps. Rational Cognition priming (RC) reduces negative emotion from 0.844 to 0.571 (−32.3%). Empathy Priming (EP) yields a counterintuitive &lt;strong&gt;empathy paradox&lt;/strong&gt; — negative emotion &lt;em&gt;increases&lt;/em&gt; (0.878 vs 0.844). Coverage crossing 60% shows a clear threshold effect." data-cn="200 个智能体，30 步仿真。理性认知引导(RC)将负面情绪从 0.844 降至 0.571（降幅 32.3%）。共情引导(EP)出现反直觉的&lt;strong&gt;共情悖论&lt;/strong&gt;——负面情绪反而升高（0.878 vs 0.844）。覆盖率跨越 60% 后呈现清晰阈值效应。">
+            200 agents, 30 steps. Rational Cognition priming (RC) reduces negative emotion from 0.844 to 0.571 (&minus;32.3%). Empathy Priming (EP) yields a counterintuitive <strong>empathy paradox</strong> — negative emotion <em>increases</em> (0.878 vs 0.844). Coverage crossing 60% shows a clear threshold effect.
+          </p>
+          <span class="finding-tag" data-en="Empathy Paradox · Threshold Effect" data-cn="共情悖论 · 阈值效应">Empathy Paradox &middot; Threshold Effect</span>
+        </div>
+      </div>
+      <div class="case-card">
+        <div style="padding:20px;">
+          <h4 style="margin-bottom:16px;" data-en="Counterfactual Strategy Evaluation" data-cn="反事实策略评估">Counterfactual Strategy Evaluation</h4>
+          <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:16px;line-height:1.6;" data-en="Five PR strategies compared under identical external events. Consumer Dialogue performs best, Strategic Silence worst." data-cn="五种公关策略在相同外部事件下对比。消费者对话效果最优，战略沉默最差。">Five PR strategies compared under identical external events. Consumer Dialogue performs best, Strategic Silence worst.</p>
+          <div class="result-table-wrap">
+            <table class="result-table" style="font-size:0.82rem;">
+              <thead>
+                <tr>
+                  <th data-en="Strategy" data-cn="策略">Strategy</th>
+                  <th data-en="Neg. Emotion" data-cn="负面情绪比例">Neg. Emotion &darr;</th>
+                  <th data-en="Anger" data-cn="愤怒比例">Anger &darr;</th>
+                  <th data-en="Intensity" data-cn="情绪强度">Intensity &darr;</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td data-en="Actual Response" data-cn="实际应对">Actual Response</td><td>0.792</td><td>0.791</td><td>0.685</td></tr>
+                <tr><td data-en="Swift Apology" data-cn="及时致歉">Swift Apology</td><td>0.749</td><td>0.749</td><td>0.612</td></tr>
+                <tr><td data-en="Proactive Transparency" data-cn="主动透明">Proactive Transparency</td><td>0.773</td><td>0.773</td><td>0.645</td></tr>
+                <tr class="ours-row"><td data-en="Consumer Dialogue" data-cn="消费者对话"><strong>Consumer Dialogue</strong></td><td class="best">0.744</td><td class="best">0.743</td><td class="best">0.598</td></tr>
+                <tr><td data-en="Strategic Silence" data-cn="战略沉默">Strategic Silence</td><td>0.831</td><td>0.831</td><td>0.702</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <span class="finding-tag" data-en="Immediate Cooling & Gradual Rebound" data-cn="即时降温与逐步反弹">Immediate Cooling &amp; Gradual Rebound</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Project Structure ======================== -->
+<section id="structure">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label" data-en="Architecture" data-cn="架构">Architecture</span>
+      <h2 class="section-title" data-en="Project Structure" data-cn="项目结构">Project Structure</h2>
+    </div>
+    <div class="structure-tree reveal">
+<pre>posim/
+├── <span class="folder">posim/</span>                          <span class="comment"># Core framework</span>
+│   ├── <span class="folder">agents/</span>                     <span class="comment"># Agent module</span>
+│   │   ├── <span class="file">base_agent.py</span>           <span class="comment"># Base class (cognitive pipeline)</span>
+│   │   ├── <span class="file">citizen_agent.py</span>        <span class="comment"># Citizen agent</span>
+│   │   ├── <span class="file">kol_agent.py</span>            <span class="comment"># KOL agent</span>
+│   │   ├── <span class="file">media_agent.py</span>          <span class="comment"># Media agent</span>
+│   │   ├── <span class="file">government_agent.py</span>     <span class="comment"># Government agent</span>
+│   │   └── <span class="folder">ebdi/</span>                   <span class="comment"># EBDI cognitive architecture</span>
+│   │       ├── <span class="folder">belief/</span>             <span class="comment"># Belief subsystem</span>
+│   │       ├── <span class="folder">desire/</span>             <span class="comment"># Desire subsystem</span>
+│   │       ├── <span class="folder">intention/</span>          <span class="comment"># Intention subsystem (3-level CoT)</span>
+│   │       └── <span class="folder">memory/</span>             <span class="comment"># Streaming memory store</span>
+│   ├── <span class="folder">engine/</span>                     <span class="comment"># Simulation engine</span>
+│   │   ├── <span class="file">simulator.py</span>            <span class="comment"># Main loop (async concurrent)</span>
+│   │   ├── <span class="file">hawkes_process.py</span>       <span class="comment"># Hawkes self-exciting process</span>
+│   │   └── <span class="file">time_engine.py</span>          <span class="comment"># Time engine (circadian)</span>
+│   ├── <span class="folder">environment/</span>                <span class="comment"># Virtual social media platform</span>
+│   │   ├── <span class="file">recommendation.py</span>       <span class="comment"># Content recommendation</span>
+│   │   ├── <span class="file">social_network.py</span>       <span class="comment"># Three-layer social network</span>
+│   │   ├── <span class="file">hot_search.py</span>           <span class="comment"># Trending topics</span>
+│   │   └── <span class="file">event_queue.py</span>          <span class="comment"># External event queue</span>
+│   ├── <span class="folder">evaluation/</span>                 <span class="comment"># Evaluation framework</span>
+│   ├── <span class="folder">llm/</span>                        <span class="comment"># LLM resource management</span>
+│   ├── <span class="folder">prompts/</span>                    <span class="comment"># Prompt templates</span>
+│   └── <span class="folder">config/</span>                     <span class="comment"># Configuration</span>
+├── <span class="folder">scripts/</span>                        <span class="comment"># Simulation & evaluation scripts</span>
+├── <span class="folder">data/</span>                           <span class="comment"># Datasets</span>
+└── <span class="file">requirements.txt</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Citation ======================== -->
+<section id="citation">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label" data-en="Citation" data-cn="引用">Citation</span>
+      <h2 class="section-title" data-en="Citation" data-cn="引用">Citation</h2>
+      <p class="section-desc" data-en="If this work is helpful to your research, please cite:" data-cn="如果本工作对您的研究有所帮助，请引用：">If this work is helpful to your research, please cite:</p>
+    </div>
+    <div class="bibtex-wrap reveal">
+      <button class="copy-btn" onclick="copyBibtex()" id="copyBtn" data-en="Copy" data-cn="复制">Copy</button>
+      <pre id="bibtexCode">@article{posim2025,
+  title   = {POSIM: A General-Purpose Social Media Public
+             Opinion Simulation Framework Based on
+             Metacognitive Agents},
+  author  = {Anonymous},
+  year    = {2025}
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== Footer ======================== -->
+<footer class="footer">
+  <div class="container">
+    <p data-en="POSIM — Public Opinion Simulator &middot; Released under &lt;a href='https://opensource.org/licenses/MIT'&gt;MIT License&lt;/a&gt;" data-cn="POSIM — 公共舆情仿真器 &middot; 基于 &lt;a href='https://opensource.org/licenses/MIT'&gt;MIT 许可证&lt;/a&gt; 开源">
+      POSIM — Public Opinion Simulator &middot; Released under <a href="https://opensource.org/licenses/MIT">MIT License</a>
+    </p>
+    <p style="margin-top:8px;" data-en="Questions or suggestions? Please open an &lt;a href='https://github.com/DeepCog/POSIM/issues'&gt;Issue&lt;/a&gt; on GitHub." data-cn="有问题或建议？欢迎在 GitHub 上提交 &lt;a href='https://github.com/DeepCog/POSIM/issues'&gt;Issue&lt;/a&gt;。">
+      Questions or suggestions? Please open an <a href="https://github.com/DeepCog/POSIM/issues">Issue</a> on GitHub.
+    </p>
+  </div>
+</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" aria-label="Close">&times;</button>
+  <img id="lightboxImg" src="" alt="Enlarged figure">
+</div>
+
+<!-- Back to top -->
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<script src="main.js"></script>
+</body>
+</html>

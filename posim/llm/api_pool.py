@@ -283,13 +283,25 @@ class APIPool:
     def get_embedding_model(self):
         """获取本地embedding模型（懒加载）"""
         if self._embedding_model is None and self.use_local_embedding:
-            from sentence_transformers import SentenceTransformer
-            self._embedding_model = SentenceTransformer(self.local_embedding_path, device=self.embedding_device)
+            try:
+                from sentence_transformers import SentenceTransformer
+                if self.local_embedding_path and self.local_embedding_path.strip():
+                    self._embedding_model = SentenceTransformer(self.local_embedding_path, device=self.embedding_device)
+                else:
+                    logger.warning("未配置本地embedding模型路径，将使用零向量替代")
+                    self.use_local_embedding = False
+            except Exception as e:
+                logger.warning(f"加载embedding模型失败: {e}，将使用零向量替代")
+                self.use_local_embedding = False
         return self._embedding_model
 
     def encode(self, texts: List[str]) -> Any:
         """编码文本为向量"""
         model = self.get_embedding_model()
+        if model is None:
+            import numpy as np
+            dim = self.embedding_dimension or 512
+            return np.zeros((len(texts), dim))
         return model.encode(texts, normalize_embeddings=True)
 
     def _init_stats(self):

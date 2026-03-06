@@ -1,0 +1,210 @@
+{
+  "simulation": {
+    "event_name": "xibeiyuzhicai",
+    "simulation_title": "cot",
+    "decision_mode": "cot",
+    "event_background": "2025年9月10日，网红企业家罗永浩在社交媒体上指控西贝餐饮'几乎全都是预制菜'，引发广泛行业风波。罗永浩主张消费者有知情权，呼吁国家推动立法强制餐厅明示是否使用预制菜。西贝创始人贾国龙坚决否认并表示将起诉罗永浩。西贝方面强调其使用的是中央厨房预加工（配送原料）而非传统意义上的预制菜。",
+    "start_time": "2025-09-14 05:00:00",
+    "end_time": "2025-09-17 04:00:00",
+    "time_granularity": 10,
+    "participant_scale": 0,
+    "hawkes_mu": 0.01,
+    "hawkes_internal": {
+      "alpha": 0.005,
+      "beta": 0.16
+    },
+    "hawkes_external": {
+      "alpha": 0.08,
+      "beta": 0.005
+    },
+    "total_scale": 1000,
+    "circadian_strength": 0.3,
+    "min_activation_noise": {
+      "enabled": true,
+      "min_rate": 0.0,
+      "max_rate": 0.3
+    },
+    "action_weights": {
+      "like": 0.01,
+      "short_comment": 0.1,
+      "long_comment": 0.2,
+      "short_post": 0.2,
+      "repost_comment": 0.5,
+      "long_post": 0.4,
+      "repost": 1.0
+    },
+    "use_llm": true,
+    "recommend_count": 10,
+    "comment_count": 5,
+    "homophily_weight": 0.3,
+    "popularity_weight": 0.3,
+    "recency_weight": 0.2,
+    "exploration_rate": 0.2,
+    "relation_weight": 0.5,
+    "hot_search_update_interval": 15,
+    "hot_search_count": 50,
+    "hot_search_min_mentions": 10,
+    "hot_search_display_count": 5,
+    "circadian_curve": {
+      "0": 0.4,
+      "1": 0.3,
+      "2": 0.2,
+      "3": 0.2,
+      "4": 0.2,
+      "5": 0.3,
+      "6": 0.5,
+      "7": 0.7,
+      "8": 0.9,
+      "9": 1.0,
+      "10": 1.0,
+      "11": 0.95,
+      "12": 0.85,
+      "13": 0.8,
+      "14": 0.85,
+      "15": 0.9,
+      "16": 0.95,
+      "17": 1.0,
+      "18": 1.1,
+      "19": 1.15,
+      "20": 1.2,
+      "21": 1.2,
+      "22": 1.1,
+      "23": 0.8
+    }
+  },
+  "data": {
+    "users_file": "data/users.json",
+    "events_file": "data/events.json",
+    "initial_posts_file": "data/initial_posts.json",
+    "relations_file": "data/relations.json"
+  },
+  "llm": {
+    "max_concurrent_requests": 30,
+    "belief_llm_index": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "desire_llm_index": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "action_llm_index": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "strategy_llm_index": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "content_llm_index": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "recommendation_llm_index": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "other_llm_index": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "use_local_embedding_model": true,
+    "local_embedding_model_path": "E:\\PychameProjects\\posim\\models\\bge-small-zh-v1.5",
+    "embedding_dimension": 512,
+    "embedding_device": "cuda",
+    "llm_api_configs": [
+      {
+        "name": "default",
+        "enabled": false,
+        "base_url": "https://api.siliconflow.cn/v1/",
+        "api_key": "sk-rjxdimwpuwtlqapnxjzleqlxlkjzmercjjitczrfkioatbsb",
+        "model": "Qwen/Qwen2.5-7B-Instruct/d356ns5sssvc73dhvds0",
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "weight": 1.0
+      },
+      {
+        "name": "default",
+        "enabled": true,
+        "base_url": "https://api.siliconflow.cn/v1/",
+        "api_key": "sk-rjxdimwpuwtlqapnxjzleqlxlkjzmercjjitczrfkioatbsb",
+        "model": "Qwen/Qwen2.5-14B-Instruct",
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "weight": 0.5
+      }
+    ]
+  },
+  "neo4j": {
+    "enabled": false,
+    "uri": "bolt://localhost:7687",
+    "user": "neo4j",
+    "password": "123456"
+  },
+  "output": {
+    "base_dir": "scripts/xibeiyuzhicai/output",
+    "save_all_results": true,
+    "run_evaluation": true
+  },
+  "debug": {
+    "enabled": true,
+    "log_level": "DEBUG",
+    "llm_prompt_sample_rate": 0.1
+  }
+}

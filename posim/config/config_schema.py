@@ -39,7 +39,7 @@ class SimulationConfig:
     time_granularity: int = 10         # 分钟/步
     participant_scale: int = 0         # 0=使用全部用户
     use_llm: bool = True
-    decision_mode: str = "ebdi"  # "ebdi" | "no_ebdi" | "cot"
+    decision_mode: str = "ebdi"  # "ebdi" | "no_ebdi" | "cot" | "wo_belief" | "wo_desire" | "wo_intention" | "wo_hawkes"
     # 霍克斯过程
     hawkes_mu: float = 0.05
     hawkes_internal: HawkesInternalConfig = field(default_factory=HawkesInternalConfig)

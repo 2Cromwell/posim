@@ -20,7 +20,8 @@ from ..base import BaseEvaluator
 from ..utils import (
     smooth, normalize, save_json, calculate_jsd,
     calculate_normalized_entropy,
-    CONFLICT_KEYWORDS, EMOTION_KEYWORDS
+    CONFLICT_KEYWORDS, EMOTION_KEYWORDS,
+    CONFRONTATIONAL_KEYWORDS, RATIONAL_KEYWORDS
 )
 from ..visualization import (
     FIG_SIZE, FIG_SIZE_WIDE, FIG_SIZE_TALL, LW, LW_MINOR,
@@ -107,27 +108,84 @@ class OpinionIndexEvaluator(BaseEvaluator):
         return results
     
     def _analyze_confrontation(self, sim_texts, real_texts, has_real):
-        """话语对抗性程度分析"""
+        """话语对抗性程度分析（对抗性 vs 理性呼吁 关键词检测）"""
         metrics = {}
         
         # 模拟数据
         metrics['sim'] = self._compute_confrontation_detail(sim_texts)
+        metrics['sim_stance'] = self._classify_confrontation_stance(sim_texts)
         
         # 真实数据
         if has_real and real_texts:
             metrics['real'] = self._compute_confrontation_detail(real_texts)
+            metrics['real_stance'] = self._classify_confrontation_stance(real_texts)
             
-            # 对抗性差异
-            sim_score = metrics['sim']['conflict_score']
-            real_score = metrics['real']['conflict_score']
-            metrics['confrontation_diff'] = float(abs(sim_score - real_score))
-            metrics['confrontation_similarity'] = float(max(0, 1 - abs(sim_score - real_score) * 5))
-            print(f"      模拟对抗性: {sim_score:.4f}, 真实对抗性: {real_score:.4f}")
+            sim_st = metrics['sim_stance']
+            real_st = metrics['real_stance']
+            
+            # 构建三元分布: [confrontational%, rational%, neutral%]
+            sim_dist = np.array([sim_st['confrontational_ratio'],
+                                 sim_st['rational_ratio'],
+                                 sim_st['neutral_ratio']]) + 1e-10
+            real_dist = np.array([real_st['confrontational_ratio'],
+                                  real_st['rational_ratio'],
+                                  real_st['neutral_ratio']]) + 1e-10
+            sim_norm = sim_dist / sim_dist.sum()
+            real_norm = real_dist / real_dist.sum()
+            
+            # 对抗性相似度 = 1 - JSD(sim_dist, real_dist)
+            jsd = calculate_jsd(sim_norm, real_norm)
+            confrontation_similarity = float(max(0, 1 - jsd))
+            
+            metrics['confrontation_jsd'] = float(jsd)
+            metrics['confrontation_similarity'] = confrontation_similarity
+            
+            print(f"      模拟: 对抗={sim_st['confrontational_ratio']:.3f}, "
+                  f"理性={sim_st['rational_ratio']:.3f}, "
+                  f"中性={sim_st['neutral_ratio']:.3f}")
+            print(f"      真实: 对抗={real_st['confrontational_ratio']:.3f}, "
+                  f"理性={real_st['rational_ratio']:.3f}, "
+                  f"中性={real_st['neutral_ratio']:.3f}")
+            print(f"      JSD={jsd:.4f}, 对抗性相似度={confrontation_similarity:.4f}")
         
         # 绘图
         self._plot_confrontation(metrics, has_real)
         
         return metrics
+    
+    def _classify_confrontation_stance(self, texts):
+        """将文本分为对抗性/理性呼吁/中性三类，返回分布"""
+        total = max(len(texts), 1)
+        confrontational_count = 0
+        rational_count = 0
+        neutral_count = 0
+        
+        for text in texts:
+            if not text:
+                neutral_count += 1
+                continue
+            is_confr = any(kw in text for kw in CONFRONTATIONAL_KEYWORDS)
+            is_rational = any(kw in text for kw in RATIONAL_KEYWORDS)
+            
+            if is_confr and not is_rational:
+                confrontational_count += 1
+            elif is_rational and not is_confr:
+                rational_count += 1
+            elif is_confr and is_rational:
+                # 同时包含两类关键词，按对抗性计
+                confrontational_count += 1
+            else:
+                neutral_count += 1
+        
+        return {
+            'total_texts': total,
+            'confrontational_count': confrontational_count,
+            'rational_count': rational_count,
+            'neutral_count': neutral_count,
+            'confrontational_ratio': confrontational_count / total,
+            'rational_ratio': rational_count / total,
+            'neutral_ratio': neutral_count / total,
+        }
     
     def _compute_confrontation_detail(self, texts):
         """计算对抗性详细指标"""

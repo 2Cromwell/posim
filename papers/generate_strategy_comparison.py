@@ -17,12 +17,12 @@ from collections import defaultdict
 plt.rcParams.update({
     'font.family': 'serif',
     'font.serif': ['Times New Roman', 'DejaVu Serif'],
-    'font.size': 11,
-    'axes.labelsize': 13,
-    'axes.titlesize': 13,
-    'legend.fontsize': 9,
-    'xtick.labelsize': 10,
-    'ytick.labelsize': 10,
+    'font.size': 14,
+    'axes.labelsize': 16,
+    'axes.titlesize': 16,
+    'legend.fontsize': 12,
+    'xtick.labelsize': 13,
+    'ytick.labelsize': 13,
     'figure.dpi': 300,
     'savefig.dpi': 300,
     'savefig.bbox': 'tight',
@@ -45,11 +45,11 @@ STRATEGY_ORDER = ['baseline', 'swift_apology', 'transparency', 'dialogue', 'sile
 ACTIVE_STRATEGIES = ['swift_apology', 'transparency', 'dialogue', 'silence']
 
 STRATEGY_COLORS = {
-    'baseline':      '#2c3e50',
-    'swift_apology': '#1565C0',
-    'transparency':  '#2E7D32',
-    'dialogue':      '#E65100',
-    'silence':       '#6A1B9A',
+    'baseline':      '#808080',
+    'swift_apology': '#3B4892',
+    'transparency':  '#631779',
+    'dialogue':      '#F00002',
+    'silence':       '#2E7D32',
 }
 STRATEGY_MARKERS = {
     'baseline': 'o', 'swift_apology': 's', 'transparency': '^',
@@ -113,7 +113,7 @@ def add_intervention_labels(ax, steps):
     for idx, istep in enumerate(INTERVENTION_STEPS):
         label = f'Strategy\nDeployment {idx+1}'
         ax.annotate(label, xy=(istep, ymax - span * 0.03),
-                    fontsize=7, color='#37474F', fontweight='bold',
+                    fontsize=9, color='#37474F', fontweight='bold',
                     ha='center', va='top',
                     bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
                               edgecolor='#90A4AE', alpha=0.9))
@@ -149,21 +149,21 @@ def main():
                   markeredgecolor='white', markeredgewidth=0.6,
                   zorder=5 if s == 'baseline' else 3)
 
-    ax_a.set_xlabel('Simulation Step', fontweight='bold')
-    ax_a.set_ylabel('Negative Emotion Ratio', fontweight='bold')
+    ax_a.set_xlabel('Simulation Step', fontsize=15, fontweight='bold')
+    ax_a.set_ylabel('Negative Emotion Ratio', fontsize=15, fontweight='bold')
     add_intervention_zones(ax_a, steps, alpha=0.10)
     add_intervention_labels(ax_a, steps)
     ax_a.legend(loc='lower left', framealpha=0.95, edgecolor='#cccccc',
-                fontsize=8, fancybox=True, borderpad=0.4)
+                fontsize=11, fancybox=True, borderpad=0.4)
     ax_a.text(-0.08, 1.05, '(a)', transform=ax_a.transAxes,
               fontsize=15, fontweight='bold', va='top')
-    ax_a.set_title('Absolute NER Under Different Strategies', fontsize=11)
+    ax_a.set_title('Absolute NER Under Different Strategies', fontsize=15)
 
     # Panel (b): NER relative to baseline — only smoothed lines
     bl = get_series(agg, 'baseline', metric)
     steps = np.arange(1, len(bl) + 1)
 
-    ax_b.axhline(y=0, color='#2c3e50', linewidth=2.5, alpha=0.7,
+    ax_b.axhline(y=0, color='#808080', linewidth=2.5, alpha=0.7,
                  linestyle='-', label='Baseline (zero)', zorder=4)
 
     for s in ACTIVE_STRATEGIES:
@@ -181,24 +181,19 @@ def main():
                   markeredgecolor='white', markeredgewidth=0.6,
                   zorder=3)
 
-    ax_b.set_xlabel('Simulation Step', fontweight='bold')
-    ax_b.set_ylabel('NER Difference from Baseline', fontweight='bold')
+    ax_b.set_xlabel('Simulation Step', fontsize=15, fontweight='bold')
+    ax_b.set_ylabel('NER Difference from Baseline', fontsize=15, fontweight='bold')
     add_intervention_zones(ax_b, steps, alpha=0.10)
     add_intervention_labels(ax_b, steps)
     ax_b.legend(loc='lower left', framealpha=0.95, edgecolor='#cccccc',
-                fontsize=8, fancybox=True, borderpad=0.4)
+                fontsize=11, fancybox=True, borderpad=0.4)
     ax_b.text(-0.08, 1.05, '(b)', transform=ax_b.transAxes,
               fontsize=15, fontweight='bold', va='top')
-    ax_b.set_title('NER Relative to Actual Response', fontsize=11)
+    ax_b.set_title('NER Relative to Actual Response', fontsize=15)
 
-    fig.text(0.5, 0.01,
-             'Negative values in (b) indicate improvement over baseline  |  '
-             'Shaded zones = post-strategy-deployment periods',
-             ha='center', fontsize=9, style='italic', color='#546E7A')
+    plt.tight_layout()
 
-    plt.tight_layout(rect=[0, 0.03, 1, 0.96])
-
-    out_dir = script_dir / 'figures'
+    out_dir = script_dir / 'els-cas-templates_IPM' / 'figures'
     out_dir.mkdir(exist_ok=True)
     for ext in ['pdf', 'png']:
         out = out_dir / f'paper_strategy_comparison.{ext}'

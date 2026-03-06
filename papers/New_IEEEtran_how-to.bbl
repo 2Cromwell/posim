@@ -20,6 +20,9 @@
 \providecommand{\BIBdecl}{\relax}
 \BIBdecl
 
+\bibitem{gonzalez_emotional_2010}
+S.~Gonz{\'a}lez-Bail{\'o}n, R.~E. Banchs, and A.~Kaltenbrunner, ``Emotional reactions and the pulse of public opinion: Measuring the impact of political events on the sentiment of online discussions,'' \emph{arXiv preprint arXiv:1009.4019}, 2010.
+
 \bibitem{goldstein_structure_2012}
 \BIBentryALTinterwordspacing
 D.~G. Goldstein, D.~Watts, and S.~Goel, ``The structure of online diffusion networks,'' pp. 623--638. [Online]. Available: \url{https://www.microsoft.com/en-us/research/publication/the-structure-of-online-diffusion-networks-2/}
@@ -73,19 +76,50 @@ C.~Gao, X.~Lan, Z.~Lu, J.~Mao, J.~Piao, H.~Wang, D.~Jin, and Y.~Li, ``S3: Social
 Y.-S. Chuang, A.~Goyal, N.~Harlalka, S.~Suresh, R.~Hawkins, S.~Yang, D.~Shah, J.~Hu, and T.~Rogers, ``Simulating opinion dynamics with networks of {LLM}-based agents,'' in \emph{Findings of the Association for Computational Linguistics: NAACL 2024}.\hskip 1em plus 0.5em minus 0.4em\relax Association for Computational Linguistics, pp. 3326--3346. [Online]. Available: \url{https://aclanthology.org/2024.findings-naacl.211/}
 \BIBentrySTDinterwordspacing
 
+\bibitem{bratman_intention_1987}
+M.~E. Bratman, \emph{Intention, Plans, and Practical Reason}.\hskip 1em plus 0.5em minus 0.4em\relax Cambridge, MA: Harvard University Press, 1987.
+
+\bibitem{rao_bdi_1995}
+A.~S. Rao and M.~P. Georgeff, ``{BDI} agents: From theory to practice,'' in \emph{Proceedings of the First International Conference on Multiagent Systems (ICMAS-95)}.\hskip 1em plus 0.5em minus 0.4em\relax AAAI Press, 1995, pp. 312--319.
+
+\bibitem{hawkes_spectra_1971}
+A.~G. Hawkes, ``Spectra of some self-exciting and mutually exciting point processes,'' \emph{Biometrika}, vol.~58, no.~1, pp. 83--90, 1971.
+
+\bibitem{sargent_verification_2013}
+R.~G. Sargent, ``Verification and validation of simulation models,'' \emph{Journal of Simulation}, vol.~7, no.~1, pp. 12--24, 2013.
+
 \bibitem{daley_stochastic_1965}
 \BIBentryALTinterwordspacing
 D.~J. Daley and D.~G. Kendall, ``Stochastic rumours,'' vol.~1, no.~1, pp. 42--55. [Online]. Available: \url{https://doi.org/10.1093/imamat/1.1.42}
 \BIBentrySTDinterwordspacing
 
+\bibitem{watts_strogatz_1998}
+D.~J. Watts and S.~H. Strogatz, ``Collective dynamics of `small-world' networks,'' \emph{Nature}, vol. 393, pp. 440--442, 1998.
+
+\bibitem{barabasi_albert_1999}
+A.-L. Barab{\'a}si and R.~Albert, ``Emergence of scaling in random networks,'' \emph{Science}, vol. 286, no. 5439, pp. 509--512, 1999.
+
+\bibitem{jiang_weibo_spnr_2020}
+G.~Jiang, S.~Li, and M.~Li, ``Dynamic rumor spreading of public opinion reversal on {Weibo} based on a two-stage {SPNR} model,'' \emph{Physica A: Statistical Mechanics and its Applications}, vol. 558, p. 125005, 2020.
+
+\bibitem{granovetter_threshold_1978}
+M.~Granovetter, ``Threshold models of collective behavior,'' \emph{American Journal of Sociology}, vol.~83, no.~6, pp. 1420--1443, 1978.
+
+\bibitem{watts_cascades_2002}
+D.~J. Watts, ``A simple model of global cascades on random networks,'' \emph{Proceedings of the National Academy of Sciences}, vol.~99, no.~9, pp. 5766--5771, 2002.
+
+\bibitem{forrester_industrial_1961}
+J.~W. Forrester, \emph{Industrial Dynamics}.\hskip 1em plus 0.5em minus 0.4em\relax Cambridge, MA: MIT Press, 1961.
+
+\bibitem{sterman_business_2000}
+J.~D. Sterman, \emph{Business Dynamics: Systems Thinking and Modeling for a Complex World}.\hskip 1em plus 0.5em minus 0.4em\relax Boston: McGraw-Hill, 2000.
+
+\bibitem{gao_sd_public_opinion_2019}
+G.~Gao, T.~Wang, X.~Zheng, Y.~Chen, and X.~Xu, ``A systems dynamics simulation study of network public opinion evolution mechanism,'' \emph{Journal of Global Information Management}, vol.~27, no.~4, pp. 1--22, 2019.
+
 \bibitem{liu_evolution_2024}
 \BIBentryALTinterwordspacing
 J.~Liu, S.~Zhu, Z.~Wang, and S.~Chen, ``The evolution of online public opinion on earthquakes: a system dynamics approach,'' vol.~11, no.~1, p. 1636. [Online]. Available: \url{https://www.nature.com/articles/s41599-024-04162-3}
-\BIBentrySTDinterwordspacing
-
-\bibitem{kong_exploring_2020}
-\BIBentryALTinterwordspacing
-Q.~Kong, W.~Mao, G.~Chen, and D.~Zeng, ``Exploring trends and patterns of popularity stage evolution in social media,'' vol.~50, no.~10, pp. 3817--3827. [Online]. Available: \url{https://ieeexplore.ieee.org/document/8428538}
 \BIBentrySTDinterwordspacing
 
 \bibitem{rizoiu_expecting_2017}
@@ -98,13 +132,32 @@ M.-A. Rizoiu, L.~Xie, S.~Sanner, M.~Cebrian, H.~Yu, and P.~V. Hentenryck, ``Expe
 H.~Zhang, Y.~Yao, W.~Tang, J.~Zhu, and Y.~Zhang, ``Opinion-aware information diffusion model based on multivariate marked hawkes process,'' vol. 279, p. 110883. [Online]. Available: \url{https://www.sciencedirect.com/science/article/pii/S0950705123006330}
 \BIBentrySTDinterwordspacing
 
+\bibitem{grimm_odd_2010}
+\BIBentryALTinterwordspacing
+V.~Grimm, U.~Berger, D.~L. DeAngelis, J.~G. Polhill, J.~Giske, and S.~F. Railsback, ``The {ODD} protocol: A review and first update,'' vol. 221, no.~23, pp. 2760--2768. [Online]. Available: \url{https://www.sciencedirect.com/science/article/pii/S030438001000414X}
+\BIBentrySTDinterwordspacing
+
 \bibitem{degroot_reaching_1974}
 \BIBentryALTinterwordspacing
 M.~H. DeGroot, ``Reaching a consensus,'' vol.~69, no. 345, pp. 118--121. [Online]. Available: \url{https://www.jstor.org/stable/2285509}
 \BIBentrySTDinterwordspacing
 
-\bibitem{hegselmann_opinion_nodate}
-R.~Hegselmann, ``Opinion dynamics and bounded confidence models, analysis, and simulation.''
+\bibitem{deffuant_mixing_2000}
+G.~Deffuant, D.~Neau, F.~Amblard, and G.~Weisbuch, ``Mixing beliefs among interacting agents,'' \emph{Advances in Complex Systems}, vol.~3, no. 1--4, pp. 87--98, 2000.
+
+\bibitem{hegselmann_opinion_2002}
+\BIBentryALTinterwordspacing
+R.~Hegselmann and U.~Krause, ``Opinion dynamics and bounded confidence: models, analysis and simulation,'' \emph{Journal of Artificial Societies and Social Simulation}, vol.~5, no.~3, p.~2, 2002. [Online]. Available: \url{https://www.jasss.org/5/3/2.html}
+\BIBentrySTDinterwordspacing
+
+\bibitem{bernardo_bc_survey_2024}
+C.~Bernardo, C.~Altafini, A.~Proskurnikov, and F.~Vasca, ``Bounded confidence opinion dynamics: A survey,'' \emph{Automatica}, vol. 159, p. 111302, 2024.
+
+\bibitem{chen_evolution_2025}
+J.~Chen, J.~Xin, and W.~Ni, ``Evolution and mitigation strategies of online public opinion: An analysis using an improved replicator dynamic three-party game model,'' \emph{PLOS ONE}, vol.~20, no.~7, p. e0325744, 2025.
+
+\bibitem{wu_public_2023}
+X.~Wu and Z.~Liu, ``Research on public opinion propagation of emergency reversal based on machine learning,'' \emph{Complex \& Intelligent Systems}, 2023.
 
 \bibitem{liu_agent-based_2024}
 \BIBentryALTinterwordspacing
@@ -116,37 +169,18 @@ S.~Liu and H.~Wen, ``Agent-based modelling of polarized news and opinion dynamic
 S.~Banisch, R.~Lima, and T.~Araújo, ``Agent based models and opinion dynamics as markov chains,'' vol.~34, no.~4, pp. 549--561. [Online]. Available: \url{https://www.sciencedirect.com/science/article/pii/S0378873312000378}
 \BIBentrySTDinterwordspacing
 
-\bibitem{grimm_odd_2010}
-\BIBentryALTinterwordspacing
-V.~Grimm, U.~Berger, D.~L. DeAngelis, J.~G. Polhill, J.~Giske, and S.~F. Railsback, ``The {ODD} protocol: A review and first update,'' vol. 221, no.~23, pp. 2760--2768. [Online]. Available: \url{https://www.sciencedirect.com/science/article/pii/S030438001000414X}
-\BIBentrySTDinterwordspacing
+\bibitem{cinelli_echo_2021}
+M.~Cinelli, G.~{de Francisci Morales}, A.~Galeazzi, W.~Quattrociocchi, and M.~Starnini, ``The echo chamber effect on social media,'' \emph{Proceedings of the National Academy of Sciences}, vol. 118, no.~9, p. e2023301118, 2021.
 
-\bibitem{zhou_agents_2023}
-\BIBentryALTinterwordspacing
-W.~Zhou, Y.~E. Jiang, L.~Li, J.~Wu, T.~Wang, S.~Qiu, J.~Zhang, J.~Chen, R.~Wu, S.~Wang \emph{et~al.}, ``Agents: An open-source framework for autonomous language agents.'' [Online]. Available: \url{https://arxiv.org/abs/2309.07870}
-\BIBentrySTDinterwordspacing
+\bibitem{berger_what_2012}
+J.~Berger and K.~L. Milkman, ``What makes online content viral?'' \emph{Journal of Marketing Research}, vol.~49, no.~2, pp. 192--205, 2012.
 
-\bibitem{yang_auto-gpt_2023}
-\BIBentryALTinterwordspacing
-H.~Yang, S.~Yue, and Y.~He, ``Auto-{GPT} for online decision making: Benchmarks and additional opinions.'' [Online]. Available: \url{https://arxiv.org/abs/2306.02224}
-\BIBentrySTDinterwordspacing
+\bibitem{katz_uses_1973}
+E.~Katz, J.~G. Blumler, and M.~Gurevitch, ``Uses and gratifications research,'' in \emph{The Public Opinion Quarterly}, 1973, vol.~37, no.~4, pp. 509--523.
 
 \bibitem{zhang_spark_2025}
 \BIBentryALTinterwordspacing
 B.~Zhang, Y.~Yang, F.~Niu, X.~Fu, G.~Dai, and H.~Huang, ``{SPARK}: Simulating the co-evolution of stance and topic dynamics in online discourse with {LLM}-based agents,'' in \emph{Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing}.\hskip 1em plus 0.5em minus 0.4em\relax Association for Computational Linguistics, pp. 23\,072--23\,084. [Online]. Available: \url{https://aclanthology.org/2025.emnlp-main.1176/}
-\BIBentrySTDinterwordspacing
-
-\bibitem{zhang_trendsim_2025}
-\BIBentryALTinterwordspacing
-Z.~Zhang, J.~Lian, C.~Ma \emph{et~al.}, ``{TrendSim}: Simulating trending topics in social media under poisoning attacks with {LLM}-based multi-agent system,'' in \emph{Findings of the Association for Computational Linguistics: NAACL 2025}.\hskip 1em plus 0.5em minus 0.4em\relax Association for Computational Linguistics, pp. 2930--2949. [Online]. Available: \url{https://aclanthology.org/2025.findings-naacl.160/}
-\BIBentrySTDinterwordspacing
-
-\bibitem{yang_oasis_2025}
-Z.~Yang, Z.~Zhang, Z.~Zheng \emph{et~al.}, ``{OASIS}: Open agents social interaction simulations on one million agents,'' \emph{Information Processing and Management}, 2025, in press.
-
-\bibitem{yao_social_2025}
-\BIBentryALTinterwordspacing
-J.~Yao, H.~Zhang, J.~Ou, D.~Zuo, Z.~Yang, and Z.~Dong, ``Social opinions prediction utilizes fusing dynamics equation with {LLM}-based agents,'' vol.~15, no.~1, p. 15472. [Online]. Available: \url{https://www.nature.com/articles/s41598-025-99704-3}
 \BIBentrySTDinterwordspacing
 
 \bibitem{zhang_llm-aidsim_2025}
@@ -159,17 +193,63 @@ L.~Zhang, Y.~Hu, W.~Li, Q.~Bai, and P.~Nand, ``{LLM}-{AIDSim}: {LLM}-enhanced ag
 Y.~Hu, G.~Sherpa, L.~Zhang, W.~Li, Q.~Bai, Y.~Wang, and X.~Wang, ``An {LLM}-enhanced agent-based simulation tool for information propagation,'' in \emph{Proceedings of the Thirty-Third International Joint Conference on Artificial Intelligence}.\hskip 1em plus 0.5em minus 0.4em\relax IJCAI, pp. 8679--8682. [Online]. Available: \url{https://www.ijcai.org/proceedings/2024/1007}
 \BIBentrySTDinterwordspacing
 
-\bibitem{mou_unveiling_2024}
+\bibitem{yao_social_2025}
 \BIBentryALTinterwordspacing
-X.~Mou, Z.~Wei, and X.~Huang, ``Unveiling the truth and facilitating change: Towards agent-based large-scale social movement simulation,'' in \emph{Findings of the Association for Computational Linguistics: ACL 2024}.\hskip 1em plus 0.5em minus 0.4em\relax Association for Computational Linguistics, pp. 4789--4809. [Online]. Available: \url{https://aclanthology.org/2024.findings-acl.285/}
+J.~Yao, H.~Zhang, J.~Ou, D.~Zuo, Z.~Yang, and Z.~Dong, ``Social opinions prediction utilizes fusing dynamics equation with {LLM}-based agents,'' vol.~15, no.~1, p. 15472. [Online]. Available: \url{https://www.nature.com/articles/s41598-025-99704-3}
 \BIBentrySTDinterwordspacing
+
+\bibitem{yang_oasis_2025}
+Z.~Yang, Z.~Zhang, Z.~Zheng \emph{et~al.}, ``{OASIS}: Open agents social interaction simulations on one million agents,'' \emph{Information Processing and Management}, 2025, in press.
 
 \bibitem{liu_lmagent_2026}
 \BIBentryALTinterwordspacing
 Y.~Liu, W.~Liu, X.~Gu, Y.~Rui, X.~He, and Y.~Zhang, ``{LMAgent}: A large-scale multimodal agents society for multi-user simulation,'' pp. 1--12. [Online]. Available: \url{https://ieeexplore.ieee.org/document/11329188}
 \BIBentrySTDinterwordspacing
 
-\bibitem{sargent_verification_2013}
-R.~G. Sargent, ``Verification and validation of simulation models,'' \emph{Journal of Simulation}, vol.~7, no.~1, pp. 12--24, 2013.
+\bibitem{mou_unveiling_2024}
+\BIBentryALTinterwordspacing
+X.~Mou, Z.~Wei, and X.~Huang, ``Unveiling the truth and facilitating change: Towards agent-based large-scale social movement simulation,'' in \emph{Findings of the Association for Computational Linguistics: ACL 2024}.\hskip 1em plus 0.5em minus 0.4em\relax Association for Computational Linguistics, pp. 4789--4809. [Online]. Available: \url{https://aclanthology.org/2024.findings-acl.285/}
+\BIBentrySTDinterwordspacing
+
+\bibitem{zhang_trendsim_2025}
+\BIBentryALTinterwordspacing
+Z.~Zhang, J.~Lian, C.~Ma \emph{et~al.}, ``{TrendSim}: Simulating trending topics in social media under poisoning attacks with {LLM}-based multi-agent system,'' in \emph{Findings of the Association for Computational Linguistics: NAACL 2025}.\hskip 1em plus 0.5em minus 0.4em\relax Association for Computational Linguistics, pp. 2930--2949. [Online]. Available: \url{https://aclanthology.org/2025.findings-naacl.160/}
+\BIBentrySTDinterwordspacing
+
+\bibitem{myint2024crisis_mtl_intent}
+P.~Y.~W. Myint, S.~L. Lo, and Y.~Zhang, ``Unveiling the dynamics of crisis events: Sentiment and emotion analysis via multi-task learning with attention mechanism and subject-based intent prediction,'' \emph{Information Processing \& Management}, vol.~61, no.~4, p. 103695, 2024.
+
+\bibitem{wei_chain_2022}
+J.~Wei, X.~Wang, D.~Schuurmans, M.~Bosma, B.~Ichter, F.~Xia, E.~Chi, Q.~V. Le, and D.~Zhou, ``Chain-of-thought prompting elicits reasoning in large language models,'' in \emph{Advances in Neural Information Processing Systems}, vol.~35, 2022, pp. 24\,824--24\,837.
+
+\bibitem{ellis_reason_1962}
+A.~Ellis, \emph{Reason and Emotion in Psychotherapy}.\hskip 1em plus 0.5em minus 0.4em\relax New York: Lyle Stuart, 1962.
+
+\bibitem{ekman_basic_1992}
+P.~Ekman, ``An argument for basic emotions,'' \emph{Cognition and Emotion}, vol.~6, no. 3--4, pp. 169--200, 1992.
+
+\bibitem{hatfield_emotional_1994}
+E.~Hatfield, J.~T. Cacioppo, and R.~L. Rapson, \emph{Emotional Contagion}.\hskip 1em plus 0.5em minus 0.4em\relax Cambridge: Cambridge University Press, 1994.
+
+\bibitem{fan2023emotional_contagion}
+R.~Fan, J.~Zhao, Y.~Chen, and K.~Xu, ``Modeling emotional contagion and information diffusion in online social networks,'' \emph{Information Processing \& Management}, vol.~60, no.~4, p. 103260, 2023.
+
+\bibitem{katz_personal_1955}
+E.~Katz and P.~F. Lazarsfeld, \emph{Personal Influence: The Part Played by People in the Flow of Mass Communications}.\hskip 1em plus 0.5em minus 0.4em\relax Free Press, 1955.
+
+\bibitem{wu2023algorithmic_exposure}
+L.~Wu, C.~Zhang, X.~Zhao, and Q.~Liu, ``Algorithmic exposure and echo chamber formation in online platforms,'' \emph{Information Processing \& Management}, vol.~60, no.~3, p. 103215, 2023.
+
+\bibitem{guo_stochastic_2024}
+C.~Guo and Y.~Song, ``A new stochastic {Petri} net modeling approach for the evolution of online public opinion on emergencies,'' \emph{Systems}, vol.~12, no.~9, p. 333, 2024.
+
+\bibitem{bail_opposing_2018}
+C.~A. Bail, L.~P. Argyle, T.~W. Brown, J.~P. Bumpus, H.~Chen, M.~B.~F. Hunzaker, J.~Lee, M.~Mann, F.~Merhout, and A.~Volfovsky, ``Exposure to opposing views on social media can increase political polarization,'' \emph{Proceedings of the National Academy of Sciences}, vol. 115, no.~37, pp. 9216--9221, 2018.
+
+\bibitem{cinelli2021echo_ipm}
+M.~Cinelli, G.~D.~F. Morales, A.~Galeazzi, W.~Quattrociocchi, and M.~Starnini, ``The echo chamber effect on social media,'' \emph{Information Processing \& Management}, vol.~58, no.~1, p. 102453, 2021.
+
+\bibitem{batson_empathy_1991}
+C.~D. Batson, S.~Early, and G.~Salvarani, ``Is empathy-induced helping due to self--other merging?'' \emph{Journal of Personality and Social Psychology}, vol.~61, no.~3, pp. 413--426, 1991.
 
 \end{thebibliography}
