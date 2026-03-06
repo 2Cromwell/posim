@@ -390,6 +390,139 @@ const agentObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.2 });
 document.querySelectorAll('.agent-grid').forEach(el => agentObserver.observe(el));
 
+// ---------- Coming Soon Modal ----------
+function openComingSoon() {
+  const modal = document.getElementById('comingSoonModal');
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeComingSoon(e) {
+  if (e && e.target && !e.target.closest('.modal-box') && e.target !== document.querySelector('.modal-box .btn')) {
+    // clicked overlay
+  } else if (e && e.target && e.target.closest('.modal-box') && !e.target.closest('.btn')) {
+    return; // clicked inside box but not button
+  }
+  document.getElementById('comingSoonModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('comingSoonModal');
+    if (modal.classList.contains('open')) closeComingSoon();
+  }
+});
+
+// ---------- Hero Parallax on Scroll ----------
+(function() {
+  const hero = document.getElementById('hero');
+  const logoWrap = document.querySelector('.hero-logo-wrap');
+  const heroTitle = document.querySelector('.hero-title');
+
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const heroH = hero.offsetHeight;
+    if (scrollY > heroH) return;
+    const ratio = scrollY / heroH;
+    if (logoWrap) logoWrap.style.transform = `translateY(${scrollY * 0.15}px) scale(${1 - ratio * 0.08})`;
+    if (heroTitle) heroTitle.style.transform = `translateY(${scrollY * 0.08}px)`;
+    hero.style.opacity = 1 - ratio * 0.4;
+  }, { passive: true });
+})();
+
+// ---------- Hero Quote Typing Effect ----------
+(function() {
+  const quoteEl = document.querySelector('.hero-quote');
+  if (!quoteEl) return;
+  const fullText = quoteEl.textContent;
+  quoteEl.textContent = '';
+  quoteEl.style.borderRight = '2px solid var(--primary)';
+
+  let i = 0;
+  function type() {
+    if (i < fullText.length) {
+      quoteEl.textContent += fullText.charAt(i);
+      i++;
+      setTimeout(type, 40 + Math.random() * 30);
+    } else {
+      // Remove cursor after typing done
+      setTimeout(() => { quoteEl.style.borderRight = 'none'; }, 1500);
+    }
+  }
+  // Start typing after a delay
+  setTimeout(type, 1200);
+})();
+
+// ---------- Case Study Card Entrance ----------
+const caseObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const cards = entry.target.querySelectorAll('.case-card');
+      cards.forEach((card, i) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        setTimeout(() => {
+          card.style.transition = 'all 0.6s cubic-bezier(0.4,0,0.2,1)';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, i * 200);
+      });
+      caseObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+document.querySelectorAll('.case-grid').forEach(el => caseObserver.observe(el));
+
+// ---------- Highlight-box hover glow ----------
+document.querySelectorAll('.highlight-box').forEach(box => {
+  box.addEventListener('mouseenter', () => {
+    box.style.transition = 'box-shadow 0.3s, transform 0.3s';
+    box.style.boxShadow = '0 4px 20px rgba(26,86,219,0.1)';
+    box.style.transform = 'translateX(4px)';
+  });
+  box.addEventListener('mouseleave', () => {
+    box.style.boxShadow = '';
+    box.style.transform = '';
+  });
+});
+
+// ---------- Finding-tag click ripple ----------
+document.querySelectorAll('.finding-tag').forEach(tag => {
+  tag.style.cursor = 'default';
+  tag.addEventListener('click', function(e) {
+    const ripple = document.createElement('span');
+    ripple.style.cssText = 'position:absolute;border-radius:50%;background:rgba(0,0,0,0.1);transform:scale(0);animation:tagRipple 0.5s ease-out;pointer-events:none;';
+    const rect = this.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height) * 2;
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+    ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+    this.style.position = 'relative';
+    this.style.overflow = 'hidden';
+    this.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 500);
+  });
+});
+
+// ---------- Section header label slide-in ----------
+const labelObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const label = entry.target.querySelector('.section-label');
+      if (label) {
+        label.style.opacity = '0';
+        label.style.transform = 'translateY(10px) scale(0.8)';
+        setTimeout(() => {
+          label.style.transition = 'all 0.5s cubic-bezier(0.4,0,0.2,1)';
+          label.style.opacity = '1';
+          label.style.transform = 'translateY(0) scale(1)';
+        }, 100);
+      }
+      labelObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.section-header').forEach(el => labelObserver.observe(el));
+
 // ---------- KaTeX auto-render on load ----------
 document.addEventListener('DOMContentLoaded', () => {
   const checkKatex = setInterval(() => {
@@ -413,3 +546,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }, 200);
 });
+
+// ---------- Inject tag ripple keyframe ----------
+(function() {
+  const style = document.createElement('style');
+  style.textContent = '@keyframes tagRipple { to { transform: scale(1); opacity: 0; } }';
+  document.head.appendChild(style);
+})();

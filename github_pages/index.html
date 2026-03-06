@@ -73,7 +73,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         <span data-en="Paper (PDF)" data-cn="论文 (PDF)">Paper (PDF)</span>
       </a>
-      <a href="#" class="btn btn-outline">
+      <a href="javascript:void(0)" class="btn btn-outline" onclick="openComingSoon()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
         <span data-en="Online Demo" data-cn="在线演示">Online Demo</span>
       </a>
@@ -608,41 +608,87 @@
         Demonstrating POSIM as a computational experiment platform for cognitive priming and counterfactual strategy evaluation.
       </p>
     </div>
+    <!-- Case 1: Cognitive Priming -->
     <div class="case-grid reveal">
       <div class="case-card">
-        <img src="fig_cognitive_priming.png" alt="Cognitive Priming Experiment" onclick="openLightbox(this)">
-        <div class="case-card-body">
-          <h4 data-en="Cognitive Priming Experiment" data-cn="认知引导实验">Cognitive Priming Experiment</h4>
-          <p data-en="200 agents, 30 steps. Rational Cognition priming (RC) reduces negative emotion from 0.844 to 0.571 (−32.3%). Empathy Priming (EP) yields a counterintuitive &lt;strong&gt;empathy paradox&lt;/strong&gt; — negative emotion &lt;em&gt;increases&lt;/em&gt; (0.878 vs 0.844). Coverage crossing 60% shows a clear threshold effect." data-cn="200 个智能体，30 步仿真。理性认知引导(RC)将负面情绪从 0.844 降至 0.571（降幅 32.3%）。共情引导(EP)出现反直觉的&lt;strong&gt;共情悖论&lt;/strong&gt;——负面情绪反而升高（0.878 vs 0.844）。覆盖率跨越 60% 后呈现清晰阈值效应。">
-            200 agents, 30 steps. Rational Cognition priming (RC) reduces negative emotion from 0.844 to 0.571 (&minus;32.3%). Empathy Priming (EP) yields a counterintuitive <strong>empathy paradox</strong> — negative emotion <em>increases</em> (0.878 vs 0.844). Coverage crossing 60% shows a clear threshold effect.
-          </p>
-          <span class="finding-tag" data-en="Empathy Paradox · Threshold Effect" data-cn="共情悖论 · 阈值效应">Empathy Paradox &middot; Threshold Effect</span>
+        <div class="case-card-inner">
+          <img src="fig_cognitive_priming.png" alt="Cognitive Priming Experiment" onclick="openLightbox(this)" style="cursor:pointer;">
+          <div class="case-card-body">
+            <h4 data-en="Case 1 &middot; Cognitive Priming Experiment" data-cn="案例一 &middot; 认知引导实验">Case 1 &middot; Cognitive Priming Experiment</h4>
+            <p data-en="200 agents, 30 simulation steps. Two cognitive priming strategies applied at varying coverage rates (20%–100%)." data-cn="200 个智能体，30 步仿真。两种认知引导策略在 20%–100% 覆盖率下对比。">200 agents, 30 simulation steps. Two cognitive priming strategies applied at varying coverage rates (20%&ndash;100%).</p>
+            <div class="highlight-box" style="margin:12px 0;border-left-color:#8b5cf6;">
+              <p style="font-size:0.85rem;line-height:1.6;" data-en="&lt;strong&gt;Rational Cognition (RC):&lt;/strong&gt; Negative emotion drops from 0.844 → 0.571 (&lt;strong&gt;−32.3%&lt;/strong&gt;). Effect monotonically increases with coverage." data-cn="&lt;strong&gt;理性认知引导(RC)：&lt;/strong&gt;负面情绪从 0.844 降至 0.571（&lt;strong&gt;降幅 32.3%&lt;/strong&gt;），效果随覆盖率单调递增。">
+                <strong>Rational Cognition (RC):</strong> Negative emotion drops from 0.844 &rarr; 0.571 (<strong>&minus;32.3%</strong>). Effect monotonically increases with coverage.
+              </p>
+            </div>
+            <div class="highlight-box" style="margin:12px 0;border-left-color:#f59e0b;">
+              <p style="font-size:0.85rem;line-height:1.6;" data-en="&lt;strong&gt;Empathy Priming (EP):&lt;/strong&gt; Counterintuitive &lt;em&gt;empathy paradox&lt;/em&gt; — negative emotion &lt;em&gt;increases&lt;/em&gt; (0.878 vs 0.844). Deep understanding of others' suffering amplifies rather than mitigates negative sentiment." data-cn="&lt;strong&gt;共情引导(EP)：&lt;/strong&gt;出现反直觉的&lt;em&gt;共情悖论&lt;/em&gt;——负面情绪反而&lt;em&gt;升高&lt;/em&gt;（0.878 vs 0.844）。对他人痛苦的深度共情放大了负面情绪而非缓解。">
+                <strong>Empathy Priming (EP):</strong> Counterintuitive <em>empathy paradox</em> — negative emotion <em>increases</em> (0.878 vs 0.844). Deep understanding of others' suffering amplifies rather than mitigates negative sentiment.
+              </p>
+            </div>
+            <p style="font-size:0.85rem;color:var(--text-secondary);margin-top:8px;" data-en="Coverage crossing 60% shows a clear &lt;strong&gt;threshold effect&lt;/strong&gt; — below this point, priming barely propagates through social networks." data-cn="覆盖率跨越 60% 后呈现清晰&lt;strong&gt;阈值效应&lt;/strong&gt;——低于此阈值，引导效果几乎无法在社交网络中传播。">Coverage crossing 60% shows a clear <strong>threshold effect</strong> — below this point, priming barely propagates through social networks.</p>
+            <div style="margin-top:12px;">
+              <span class="finding-tag" data-en="Empathy Paradox" data-cn="共情悖论">Empathy Paradox</span>
+              <span class="finding-tag" data-en="Threshold Effect" data-cn="阈值效应">Threshold Effect</span>
+              <span class="finding-tag" data-en="Non-linear Diffusion" data-cn="非线性扩散">Non-linear Diffusion</span>
+            </div>
+          </div>
         </div>
       </div>
+
+      <!-- Case 2: Counterfactual Strategy Evaluation -->
       <div class="case-card">
-        <div style="padding:20px;">
-          <h4 style="margin-bottom:16px;" data-en="Counterfactual Strategy Evaluation" data-cn="反事实策略评估">Counterfactual Strategy Evaluation</h4>
-          <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:16px;line-height:1.6;" data-en="Five PR strategies compared under identical external events. Consumer Dialogue performs best, Strategic Silence worst." data-cn="五种公关策略在相同外部事件下对比。消费者对话效果最优，战略沉默最差。">Five PR strategies compared under identical external events. Consumer Dialogue performs best, Strategic Silence worst.</p>
-          <div class="result-table-wrap">
-            <table class="result-table" style="font-size:0.82rem;">
-              <thead>
-                <tr>
-                  <th data-en="Strategy" data-cn="策略">Strategy</th>
-                  <th data-en="Neg. Emotion" data-cn="负面情绪比例">Neg. Emotion &darr;</th>
-                  <th data-en="Anger" data-cn="愤怒比例">Anger &darr;</th>
-                  <th data-en="Intensity" data-cn="情绪强度">Intensity &darr;</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td data-en="Actual Response" data-cn="实际应对">Actual Response</td><td>0.792</td><td>0.791</td><td>0.685</td></tr>
-                <tr><td data-en="Swift Apology" data-cn="及时致歉">Swift Apology</td><td>0.749</td><td>0.749</td><td>0.612</td></tr>
-                <tr><td data-en="Proactive Transparency" data-cn="主动透明">Proactive Transparency</td><td>0.773</td><td>0.773</td><td>0.645</td></tr>
-                <tr class="ours-row"><td data-en="Consumer Dialogue" data-cn="消费者对话"><strong>Consumer Dialogue</strong></td><td class="best">0.744</td><td class="best">0.743</td><td class="best">0.598</td></tr>
-                <tr><td data-en="Strategic Silence" data-cn="战略沉默">Strategic Silence</td><td>0.831</td><td>0.831</td><td>0.702</td></tr>
-              </tbody>
-            </table>
+        <div class="case-card-inner">
+          <div class="case-card-body">
+            <h4 data-en="Case 2 &middot; Counterfactual Strategy Evaluation" data-cn="案例二 &middot; 反事实策略评估">Case 2 &middot; Counterfactual Strategy Evaluation</h4>
+            <p data-en="Five PR strategies compared under identical external events on the Luxury-Earring dataset. The Intervenor-Simulator-Evaluator pipeline enables 'what-if' analysis without real-world deployment." data-cn="在天价耳环数据集上对比五种公关策略。干预器-仿真器-评估器流水线支持"假如"分析，无需真实部署。">Five PR strategies compared under identical external events on the Luxury-Earring dataset. The Intervenor-Simulator-Evaluator pipeline enables &ldquo;what-if&rdquo; analysis without real-world deployment.</p>
+            <div class="result-table-wrap" style="margin:16px 0;">
+              <table class="result-table" style="font-size:0.84rem;">
+                <thead>
+                  <tr>
+                    <th data-en="Strategy" data-cn="策略">Strategy</th>
+                    <th data-en="Neg. Emotion ↓" data-cn="负面情绪 ↓">Neg. Emotion &darr;</th>
+                    <th data-en="Anger ↓" data-cn="愤怒 ↓">Anger &darr;</th>
+                    <th data-en="Intensity ↓" data-cn="情绪强度 ↓">Intensity &darr;</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td data-en="Actual Response" data-cn="实际应对">Actual Response</td><td>0.792</td><td>0.791</td><td>0.685</td></tr>
+                  <tr><td data-en="Swift Apology" data-cn="及时致歉">Swift Apology</td><td>0.749</td><td>0.749</td><td>0.612</td></tr>
+                  <tr><td data-en="Proactive Transparency" data-cn="主动透明">Proactive Transparency</td><td>0.773</td><td>0.773</td><td>0.645</td></tr>
+                  <tr class="ours-row"><td data-en="Consumer Dialogue" data-cn="消费者对话"><strong>Consumer Dialogue</strong></td><td class="best">0.744</td><td class="best">0.743</td><td class="best">0.598</td></tr>
+                  <tr><td data-en="Strategic Silence" data-cn="战略沉默">Strategic Silence</td><td>0.831</td><td>0.831</td><td>0.702</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="highlight-box" style="margin:12px 0;border-left-color:#10b981;">
+              <p style="font-size:0.85rem;line-height:1.6;" data-en="&lt;strong&gt;Consumer Dialogue&lt;/strong&gt; achieves the best results across all metrics (−6.1% neg. emotion vs actual response). &lt;strong&gt;Strategic Silence&lt;/strong&gt; is the worst — inaction amplifies anger (+4.9%)." data-cn="&lt;strong&gt;消费者对话&lt;/strong&gt;在所有指标上效果最优（负面情绪较实际应对降低 6.1%）。&lt;strong&gt;战略沉默&lt;/strong&gt;效果最差——不作为会加剧愤怒（+4.9%）。">
+                <strong>Consumer Dialogue</strong> achieves the best results across all metrics (&minus;6.1% neg. emotion vs actual response). <strong>Strategic Silence</strong> is the worst — inaction amplifies anger (+4.9%).
+              </p>
+            </div>
+            <p style="font-size:0.85rem;color:var(--text-secondary);margin-top:8px;" data-en="All strategies exhibit an &lt;strong&gt;immediate cooling &amp; gradual rebound&lt;/strong&gt; pattern: intervention triggers initial sentiment relief, but public opinion naturally restores toward baseline as new events unfold." data-cn="所有策略均呈现&lt;strong&gt;即时降温与逐步反弹&lt;/strong&gt;模式：干预触发短期情绪缓解，但随着新事件展开，舆论自然回归基线。">All strategies exhibit an <strong>immediate cooling &amp; gradual rebound</strong> pattern: intervention triggers initial sentiment relief, but public opinion naturally restores toward baseline as new events unfold.</p>
+            <div style="margin-top:12px;">
+              <span class="finding-tag" data-en="Immediate Cooling" data-cn="即时降温">Immediate Cooling</span>
+              <span class="finding-tag" data-en="Gradual Rebound" data-cn="逐步反弹">Gradual Rebound</span>
+              <span class="finding-tag" data-en="What-If Analysis" data-cn="假设分析">What-If Analysis</span>
+            </div>
           </div>
-          <span class="finding-tag" data-en="Immediate Cooling & Gradual Rebound" data-cn="即时降温与逐步反弹">Immediate Cooling &amp; Gradual Rebound</span>
+          <div class="case-card-visual" style="display:flex;flex-direction:column;justify-content:center;align-items:center;padding:28px;background:var(--surface);gap:16px;">
+            <div style="text-align:center;">
+              <div style="font-size:2.2rem;font-weight:800;color:var(--primary);line-height:1;">5</div>
+              <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px;" data-en="PR Strategies" data-cn="公关策略">PR Strategies</div>
+            </div>
+            <div style="width:60px;height:1px;background:var(--border);"></div>
+            <div style="text-align:center;">
+              <div style="font-size:2.2rem;font-weight:800;color:#10b981;line-height:1;">&minus;6.1%</div>
+              <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px;" data-en="Best Strategy Effect" data-cn="最优策略效果">Best Strategy Effect</div>
+            </div>
+            <div style="width:60px;height:1px;background:var(--border);"></div>
+            <div style="text-align:center;">
+              <div style="font-size:2.2rem;font-weight:800;color:#ef4444;line-height:1;">+4.9%</div>
+              <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px;" data-en="Worst Strategy Effect" data-cn="最差策略效果">Worst Strategy Effect</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -722,6 +768,16 @@
     </p>
   </div>
 </footer>
+
+<!-- Coming Soon Modal -->
+<div class="modal-overlay" id="comingSoonModal" onclick="closeComingSoon(event)">
+  <div class="modal-box">
+    <span class="modal-icon">🚀</span>
+    <h3 data-en="Coming Soon" data-cn="敬请期待">Coming Soon</h3>
+    <p data-en="The POSIM Online Demo system is currently under active development. Stay tuned for an interactive simulation experience!" data-cn="POSIM 在线演示系统正在积极开发中，敬请期待交互式仿真体验！">The POSIM Online Demo system is currently under active development. Stay tuned for an interactive simulation experience!</p>
+    <button class="btn btn-primary" onclick="closeComingSoon()" data-en="Got it" data-cn="知道了">Got it</button>
+  </div>
+</div>
 
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
